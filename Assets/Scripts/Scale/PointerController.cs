@@ -16,6 +16,7 @@ public class PointerController : MonoBehaviour
     }
 
     private bool _moving = false;
+
     private void Update()
     {
         if (!_moving) return;
@@ -27,6 +28,12 @@ public class PointerController : MonoBehaviour
         }
     }
 
+    public void Reset()
+    {
+        _current = 0;
+        SetPosition(_current);
+    }
+
     public void StartMoving()
     {
         _moving = true;
@@ -35,7 +42,17 @@ public class PointerController : MonoBehaviour
     public float StopMoving()
     {
         _moving = false;
-        return 1;
+        var s1 = ScaleController.Instance.Size1 / 2;
+        var s2 = ScaleController.Instance.Size2 / 2;
+        if (_current > 0.25 - s1 && _current < 0.25 + s1)
+        {
+            return 1;
+        }
+        if (_current > 0.75 - s2 && _current < 0.75 + s2)
+        {
+            return 4;
+        }
+        return 0;
     }
 
     private void SetPosition(float v)

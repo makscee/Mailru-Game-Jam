@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Security.Cryptography;
 using UnityEngine;
 
 public static class Utils

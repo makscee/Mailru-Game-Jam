@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 
 public enum BattleState
@@ -6,7 +7,8 @@ public enum BattleState
     Hidden,
     PreStart,
     Started,
-    Stopped
+    Stopped,
+    Candy,
 }
 
 public class ScaleController : MonoBehaviour
@@ -28,6 +30,8 @@ public class ScaleController : MonoBehaviour
         var width = Rt.rect.width;
         SubScale1.anchoredPosition = new Vector2(-width / 4, 0);
         SubScale2.anchoredPosition = new Vector2(width / 4, 0);
+        SetScale(0.3f, SubScale1);
+        SetScale(0.05f, SubScale2);
     }
 
     public BattleState BattleState;
@@ -45,6 +49,8 @@ public class ScaleController : MonoBehaviour
             case BattleState.Started:
                 Stop();
                 break;
+            case BattleState.Candy:
+                break;
             case BattleState.Stopped:
                 break;
             default:
@@ -54,12 +60,50 @@ public class ScaleController : MonoBehaviour
 
     public void Stop()
     {
-        _pc.StopMoving();
+        var res = _pc.StopMoving();
         BattleState = BattleState.Stopped;
+        Utils.InvokeDelayed(() => { Scores.AddScorePlayer(res * 100 * (0.9f + 0.2f * UnityEngine.Random.value)); },
+            0.5f);
         Utils.InvokeDelayed(() =>
         {
-            Utils.Animate(Rt.anchoredPosition, new Vector2(0f, _offScreen), 0.3f, (v) => { Rt.anchoredPosition = v; }, null, true);
-        }, 0.5f);
+            _pc.Reset();
+            SetScale(Size1 / 1.5f, SubScale1);
+            SetScale(Size2 / 1.5f, SubScale2);
+            StartCoroutine(CandyCoroutine());
+        }, 1f);
+    }
+
+    public RectTransform CandyBar;
+
+    private IEnumerator CandyCoroutine()
+    {
+        var t = 1f;
+        BattleState = BattleState.Candy;
+        Utils.Animate(Rt.anchoredPosition, new Vector2(0f, _offScreen / 2), 0.3f, v => Rt.anchoredPosition = v,
+            null, true);
+        yield return new WaitForSeconds(0.3f);
+        while (t > 0)
+        {
+            t -= Time.deltaTime;
+            CandyBar.sizeDelta = new Vector2(300f * t, CandyBar.rect.height);
+            if (TapDown())
+            {
+                SetScale(Size1 * 1.5f, SubScale1);
+                SetScale(Size2 * 1.5f, SubScale2);
+                t = 1f;
+                if (Size1 > 0.44f)
+                {
+                    SetScale(0.45f, SubScale1);
+                    SetScale(0.45f / 6, SubScale2);
+                    t = 0f;
+                }
+            }
+            yield return null;
+        }
+        CandyBar.sizeDelta = new Vector2(0f, CandyBar.rect.height);
+        BattleState = BattleState.Hidden;
+        Utils.Animate(Rt.anchoredPosition, new Vector2(0f, _offScreen), 0.3f, v => Rt.anchoredPosition = v,
+            null, true);
     }
 
     public void Run()
