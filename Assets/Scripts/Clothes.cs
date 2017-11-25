@@ -1,8 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class Cloth
+public class Clothes
 {
     public static List<Sprite> Sprites;
 
