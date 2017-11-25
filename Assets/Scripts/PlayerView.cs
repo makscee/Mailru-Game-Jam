@@ -10,6 +10,11 @@ public enum PillowType
     Up
 }
 
+public enum EyeType
+{
+    
+}
+
 public class PlayerView {
     private static HandsType _handsType = HandsType.Down;
     public static HandsType HandsType
