@@ -16,7 +16,7 @@ public class ScaleController : MonoBehaviour
 {
     public RectTransform SubScale, Pointer;
     public Results Results;
-    public Text PlayerComboText, EnemyComboText;
+    public Text PlayerComboText, EnemyComboText, Winner;
     public float Size1, Size2;
     private PointerController _pc;
     private float _offScreen, _onScreen, _ctOffScreen;
@@ -39,6 +39,12 @@ public class ScaleController : MonoBehaviour
         SetScale(0.3f, SubScale);
 //        SetScale(0.05f, SubScale2);
         PlayerState.LoadFromPrefs();
+    }
+
+    private void Start()
+    {
+        _curPlayer = BattleLevel.Instance.Player;
+        _curComboText = PlayerComboText;
     }
 
     public BattleState BattleState;
@@ -65,12 +71,69 @@ public class ScaleController : MonoBehaviour
 
     private void AddCombo()
     {
-        Scores.ScorePlayer++;
-        PlayerComboText.text = "x" + Scores.ScorePlayer;
-        PlayerComboText.fontSize = Math.Min(400, PlayerComboText.fontSize + 30);
-        PlayerComboText.transform.rotation = Quaternion.AngleAxis(UnityEngine.Random.Range(-25, 25), Vector3.forward);
+        Scores.Combo++;
+        _curComboText.text = "x" + Scores.Combo;
+        _curComboText.fontSize = Math.Min(400, PlayerComboText.fontSize + 30);
+        _curComboText.transform.rotation = Quaternion.AngleAxis(UnityEngine.Random.Range(-25, 25), Vector3.forward);
     }
 
+    private GameObject _curPlayer;
+    private Text _curComboText;
+    private bool _failed, _switched;
+
+    private void SwitchPlayer()
+    {
+        if (_failed && _switched)
+        {
+            Utils.InvokeDelayed( () =>
+            {
+                _pc.Reset();
+                Run(true);
+            }, 1f);
+            return;
+        }
+        if (_failed)
+        {
+            _switched = true;
+        }
+        if (_curPlayer == BattleLevel.Instance.Player)
+        {
+            _curComboText = EnemyComboText;
+            _curPlayer = BattleLevel.Instance.Enemy;
+            Utils.InvokeDelayed(() =>
+            {
+                _pc.Reset();
+                Hide();
+                HideComboText(PlayerComboText);
+                Utils.InvokeDelayed(() =>
+                {
+                    CameraScript.Instance.FocusOn(_curPlayer.transform.position);
+                    ShowComboText(EnemyComboText);
+                }, 1f);
+                Utils.InvokeDelayed(
+                    () => Run(), 2f);
+            }, 1f);
+        }
+        else
+        {
+            _curPlayer = BattleLevel.Instance.Player;
+            _curComboText = PlayerComboText;
+            Utils.InvokeDelayed(() =>
+            {
+                _pc.Reset();
+                Hide();
+                HideComboText(EnemyComboText);
+                Utils.InvokeDelayed(() =>
+                {
+                    CameraScript.Instance.FocusOn(_curPlayer.transform.position);
+                    ShowComboText(PlayerComboText);
+                }, 1f);
+                Utils.InvokeDelayed(
+                    () => Run(), 2f);
+            }, 1f);
+        }
+    }
+    
     public void Check()
     {
         var res = _pc.CheckPointer();
@@ -81,33 +144,21 @@ public class ScaleController : MonoBehaviour
                 StartCoroutine(ShakeBar());
                 BattleState = BattleState.Stopped;
                 _pc.StopMoving();
-                Scores.ScoreEnemy = UnityEngine.Random.Range(4, 8);
-                EnemyComboText.text = "x" + Scores.ScoreEnemy;
-                EnemyComboText.transform.rotation = Quaternion.AngleAxis(UnityEngine.Random.Range(-25, 25), Vector3.forward);
-                
-                Utils.InvokeDelayed(() =>
+                if (!_failed)
                 {
-                    _pc.Reset();
+                    _failed = true;
+                }
+                else
+                {
+                    Winner.gameObject.SetActive(true);
                     Hide();
-                    HideComboText(PlayerComboText);
-                    Utils.InvokeDelayed(() =>
-                    {
-                        CameraScript.Instance.FocusOn(BattleLevel.Instance.Enemy.transform.position);
-                        ShowComboText(EnemyComboText);
-                    }, 1f);
-                    Utils.InvokeDelayed(
-                        () =>
-                        {
-                            CameraScript.Instance.FocusOn(BattleLevel.Instance.Player.transform.position);
-                            HideComboText(EnemyComboText);
-                            ShowComboText(PlayerComboText);
-                            Utils.InvokeDelayed(() =>
-                            {
-                                HideComboText(PlayerComboText);
-//                                Results.Run();
-                            }, 1f);
-                        }, 3f);
-                }, 1f);
+                    HideComboText(_curComboText);
+                    return;
+                }
+//                Scores.ScoreEnemy = UnityEngine.Random.Range(4, 8);
+//                EnemyComboText.text = "x" + Scores.ScoreEnemy;
+//                EnemyComboText.transform.rotation =
+//                    Quaternion.AngleAxis(UnityEngine.Random.Range(-25, 25), Vector3.forward);
                 break;
             case 1:
                 c = Color.yellow;
@@ -120,6 +171,8 @@ public class ScaleController : MonoBehaviour
         var pos = Camera.main.ScreenToWorldPoint(_pc.transform.position);
         CutSubscale(_pc.transform.position.x);
         Effects.ExplosionEffect(pos, c);
+        _pc.StopMoving();
+        SwitchPlayer();
     }
 
     public RectTransform CandyBar;
@@ -143,16 +196,17 @@ public class ScaleController : MonoBehaviour
 
     private void ShowComboText(Graphic t)
     {
-        Utils.Animate(t.rectTransform.anchoredPosition, new Vector2(0f, 0f), 0.3f, 
+        Utils.Animate(t.rectTransform.anchoredPosition, new Vector2(0f, 0f), 0.3f,
             v => t.rectTransform.anchoredPosition = v, null, true);
     }
 
     private void HideComboText(Graphic t)
     {
+        Debug.Log("hide " + t.name);
         float os;
         if (t == PlayerComboText) os = -_ctOffScreen;
         else os = _ctOffScreen;
-        Utils.Animate(t.rectTransform.anchoredPosition, new Vector2(os * 2, 0), 0.3f, 
+        Utils.Animate(t.rectTransform.anchoredPosition, new Vector2(os * 2, 0), 0.3f,
             v => t.rectTransform.anchoredPosition = v, null, true);
     }
 
@@ -208,19 +262,19 @@ public class ScaleController : MonoBehaviour
 //        CandyUseText.gameObject.SetActive(false);
 //    }
 
-    public void Run()
+    public void Run(bool noAnim = false)
     {
-        Utils.Animate(1f, 0.5f, 0.3f, v => SpriteDarken.DarkValue = v,
-            null, true);
-        Utils.Animate(Rt.anchoredPosition, new Vector2(0f, _onScreen), 0.3f, v => Rt.anchoredPosition = v,
-            null, true);
-        PlayerComboText.rectTransform.anchoredPosition = Vector2.zero;
         BattleState = BattleState.PreStart;
         Utils.InvokeDelayed(() =>
         {
             BattleState = BattleState.Started;
             _pc.StartMoving();
         }, 0.7f);
+        if (noAnim) return;
+        Utils.Animate(1f, 0.5f, 0.3f, v => SpriteDarken.DarkValue = v,
+            null, true);
+        Utils.Animate(Rt.anchoredPosition, new Vector2(0f, _onScreen), 0.3f, v => Rt.anchoredPosition = v,
+            null, true);
     }
 
     public static bool TapDown()
