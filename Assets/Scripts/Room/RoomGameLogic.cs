@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class RoomGameLogic : MonoBehaviour
 {
@@ -10,6 +12,10 @@ public class RoomGameLogic : MonoBehaviour
     private Vector2 _moveForce;
 
     private Rect _bounds;
+
+    //private Object _stepPrefab;
+
+    private bool _isDirRight = true;
     
     private void Awake()
     {
@@ -17,6 +23,8 @@ public class RoomGameLogic : MonoBehaviour
         {
             _camera = Camera.main;
         }
+        
+        //_stepPrefab = Resources.Load("Step", typeof(GameObject));
 
         _playerView = (GameObject) Instantiate(Resources.Load("Player", typeof(GameObject)));
 
@@ -43,7 +51,7 @@ public class RoomGameLogic : MonoBehaviour
         
         _bounds.xMin = -topRightPoint.x + halfWidth;
         _bounds.xMax = topRightPoint.x - halfWidth;
-        _bounds.yMin = -1.5f;
+        _bounds.yMin = -8f;
     }
 
     private void FixedUpdate()
@@ -89,8 +97,23 @@ public class RoomGameLogic : MonoBehaviour
         {
             PlayerState.Tickle();
 
-            float xForce = (Random.value - 0.5f) * 6f;
-            _moveForce = new Vector2(xForce, 20f);
+            /*var step = (GameObject) Instantiate(_stepPrefab);
+            var stepPos = _playerObj.transform.position;
+            stepPos.z = step.transform.position.z;
+            stepPos.y += (Random.value - 0.5f) / 3f;
+            step.transform.position = stepPos;*/
+
+            float xForce = (Random.value - 0.5f) * 20f;
+            _moveForce = new Vector2(xForce, 25f);
+
+            _isDirRight = xForce > 0;
+            var scale = _playerObj.transform.localScale;
+            scale.x = Math.Abs(scale.x);
+            if (!_isDirRight)
+            {
+                scale.x = -scale.x;
+            }
+            _playerObj.transform.localScale = scale;
         }        
     }
 }
