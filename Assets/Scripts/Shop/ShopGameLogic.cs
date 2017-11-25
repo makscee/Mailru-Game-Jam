@@ -6,6 +6,17 @@ public enum PlayerSmth
     Pillow
 }
 
+class PlayerParts
+{
+    public SpriteRenderer Body;
+    public SpriteRenderer Hands;
+    public SpriteRenderer Nose;
+    public SpriteRenderer Tail;
+    public SpriteRenderer Eyes;
+    public SpriteRenderer Pillow;
+    public SpriteRenderer Shadow;
+}
+
 public class ShopGameLogic : MonoBehaviour
 {
     private GameObject _playerView;
@@ -13,13 +24,10 @@ public class ShopGameLogic : MonoBehaviour
 
     public static ShopGameLogic Instance;
 
-    private SpriteRenderer _playerClothSpriteRenderer;
-    private SpriteRenderer _playerPillowSpriteRenderer;
-    private SpriteRenderer _playerPillowShadowSpriteRenderer;
+    private PlayerParts _playerParts;
+    private Transform[] mainPartsT;
 
     [SerializeField] private Camera _camera;
-    
-    private Vector2 _moveForce;
 
     private bool _isDirLeft = true;
 
@@ -29,48 +37,66 @@ public class ShopGameLogic : MonoBehaviour
     {
         Instance = this;
         
+        _playerParts = new PlayerParts();
+        
         if (_camera == null)
         {
             _camera = Camera.main;
         }
 
-        _playerView = (GameObject) Instantiate(Resources.Load("Player", typeof(GameObject)));
+        _playerView = (GameObject) Instantiate(Resources.Load("PlayerView", typeof(GameObject)));
 
         _playerObj = (GameObject) Instantiate(Resources.Load("ShopPlayerIO", typeof(GameObject)));
         _playerView.transform.parent = _playerObj.transform;
         
        _playerObj.GetComponent<ShopPlayerIO>().ShopGameLogic = this;
         
-        _playerObj.transform.position = new Vector3(0, -1f, -2f);
+        _playerObj.transform.position = new Vector3(0, 0, -2f);
         
         PlayerState.LoadFromPrefs();
         
         Clothes.Load();
         Pillows.Load();
         
-        var playerCloth = _playerView.transform.Find("Cloth");        
+        /*var playerCloth = _playerView.transform.Find("Cloth");
         _playerClothSpriteRenderer = playerCloth.GetComponent<SpriteRenderer>();
         if (PlayerState.ClothIndex >= Clothes.Sprites.Count)
         {
             PlayerState.ClothIndex = 0;
         }
         _playerClothSpriteRenderer.sprite = Clothes.Sprites[PlayerState.ClothIndex];
-        playerCloth.gameObject.SetActive(false);
+        playerCloth.gameObject.SetActive(false);*/
         
-        var playerPillow = GameObject.Find("Pillow");
-        _playerPillowSpriteRenderer = playerPillow.GetComponent<SpriteRenderer>();
+        _playerParts.Body = _playerView.transform.Find("Body").GetComponent<SpriteRenderer>();
+        _playerParts.Hands = _playerView.transform.Find("Hands").GetComponent<SpriteRenderer>();
+        _playerParts.Nose = _playerView.transform.Find("Nose").GetComponent<SpriteRenderer>();
+        _playerParts.Tail = _playerView.transform.Find("Tail").GetComponent<SpriteRenderer>();
+        _playerParts.Eyes = _playerView.transform.Find("Eyes").GetComponent<SpriteRenderer>();
+        _playerParts.Pillow = _playerView.transform.Find("Pillow").GetComponent<SpriteRenderer>();
+        _playerParts.Shadow = _playerView.transform.Find("Shadow").GetComponent<SpriteRenderer>();
+        
+        mainPartsT = new Transform[]
+        {
+            _playerParts.Body.transform,
+            _playerParts.Hands.transform,
+            _playerParts.Nose.transform,
+            _playerParts.Tail.transform,
+            _playerParts.Eyes.transform,
+        };
+        
         if (PlayerState.PillowIndex >= Pillows.Sprites.Count)
         {
             PlayerState.PillowIndex = 0;
         }
-        _playerPillowSpriteRenderer.sprite = Pillows.Sprites[PlayerState.PillowIndex][PillowState.Idle];
+        _playerParts.Pillow.sprite = Pillows.Sprites[PlayerState.PillowIndex][PillowState.Idle];
         //playerPillow.gameObject.SetActive(true);
         
-        _playerPillowShadowSpriteRenderer = GameObject.Find("PillowShadow").GetComponent<SpriteRenderer>();
-        if (null == _playerPillowShadowSpriteRenderer)
-        {
-            Application.Quit();
-        }
+        _playerParts.Shadow = _playerView.transform.Find("Shadow").GetComponent<SpriteRenderer>();
+    }
+
+    private void Start()
+    {
+        breath(1);
     }
 
     public void ChangeSmth(PlayerSmth smth, bool next)
@@ -98,67 +124,122 @@ public class ShopGameLogic : MonoBehaviour
         if (PlayerSmth.Cloth == smth)
         {
             PlayerState.ClothIndex = curIdx;
-            _playerClothSpriteRenderer.sprite = Clothes.Sprites[curIdx];
+            //_playerParts.Body.sprite = Clothes.Sprites[curIdx];
         } else {
             PlayerState.PillowIndex = curIdx;
-            _playerPillowSpriteRenderer.sprite = Pillows.GetActive(PillowState.Idle);
+            _playerParts.Pillow.sprite = Pillows.GetActive(PillowState.Idle);
         }
     }
 
     private void ClickAnim()
     {
         const float animationWindow = 0.1f;
+        const float pillowAnimationWindow = animationWindow/1.5f;
         const float squizeVal = 0.05f;
+
+        const float PetTSpeed = 18f;
+        const float PillowSpeed = 7f;
+        const float ShadowSpeed = -4f;
         
         var steps = new Vector2[]
         {
             new Vector2(0, squizeVal*1.5f),
             new Vector2(squizeVal, -squizeVal*2)
         };
-        
-        _playerPillowSpriteRenderer.sprite = Pillows.GetActive(PillowState.Up);
 
-        var PetT = _playerObj.transform;
-        var PilT = _playerPillowSpriteRenderer.transform;
-        var PilST = _playerPillowShadowSpriteRenderer.transform;
+        var PillowT = _playerParts.Pillow.transform;
+        var ShadowT = _playerParts.Shadow.transform;
+
+        // Up
         
-        Utils.Animate(Vector2.zero, steps[0], animationWindow, (v) => { PetT.localScale += v; });
-        Utils.Animate(Vector2.zero, new Vector2(0, squizeVal*2), animationWindow, (v) =>
+        Utils.Animate(Vector2.zero, steps[0], animationWindow, (v) =>
         {
-            PetT.localPosition += 15 * v;
-            PilT.localPosition += 5 * v;
+            foreach (var t in mainPartsT)
+            {
+              t.localScale += v;
+              t.localPosition += PetTSpeed * v;
+            }
+        });
+        Utils.Animate(Vector2.zero, new Vector2(0, squizeVal), pillowAnimationWindow, (v) =>
+        {
+            PillowT.localPosition += PillowSpeed * v;
 
             v.x = v.y;
             v.z = v.y;
             v.y = 0;
-            PilST.localScale -= 4*v;
+            PillowT.localScale += ShadowSpeed * v;
+            ShadowT.localScale += ShadowSpeed*v;
         });
         
+        // Down
         Utils.InvokeDelayed(() =>
         {
-            _playerPillowSpriteRenderer.sprite = Pillows.GetActive(PillowState.Idle);
-            
-            Utils.Animate(steps[0], steps[1], animationWindow, (v) => { PetT.localScale += v; });
-            Utils.Animate(new Vector2(0, squizeVal*2), Vector2.zero, animationWindow, (v) =>
+            Utils.Animate(new Vector2(0, squizeVal), Vector2.zero, pillowAnimationWindow, (v) =>
             {
-                PetT.localPosition += 15 * v;
-                PilT.localPosition += 5 * v;
+                PillowT.localPosition += PillowSpeed * v;
                 
                 v.x = v.y;
                 v.z = v.y;
                 v.y = 0;
-                PilST.localScale -= 4*v;
+                PillowT.localScale += ShadowSpeed*v;
+                ShadowT.localScale += ShadowSpeed*v;
             });
+        }, pillowAnimationWindow);
+        
+        Utils.InvokeDelayed(() =>
+        {
+            Utils.Animate(steps[0], steps[1], animationWindow, (v) =>
+            {
+                foreach (var t in mainPartsT)
+                {
+                    t.localScale += v;
+                }
+            });
+            Utils.Animate(steps[0], Vector2.zero, animationWindow, (v) =>
+            {
+                foreach (var t in mainPartsT)
+                {
+                    t.localPosition += PetTSpeed * v;
+                }
+            });
+            
             Utils.InvokeDelayed(() =>
             {
-                Utils.Animate(steps[1], Vector3.zero, animationWindow, (v) => { PetT.localScale += v; });
+                // Restore
+                
+                Utils.Animate(steps[1], Vector3.zero, animationWindow, (v) =>
+                {
+                    foreach (var t in mainPartsT)
+                    {
+                        t.localScale += v;
+                    }
+                });
                 Utils.InvokeDelayed(() =>
                 {
-                    _playerPillowSpriteRenderer.sprite = Pillows.GetActive(PillowState.Idle);
                     _inAnim = false;
                 }, animationWindow);
             }, animationWindow);
         }, animationWindow);
+    }
+
+    private void breath(float dir)
+    {
+        const float over = 1f;
+        
+        Utils.Animate(Vector2.zero, new Vector2(0, 0.08f), over, (v) =>
+        {
+            v *= dir;
+            
+            _playerParts.Body.transform.localScale += v;
+            _playerParts.Body.transform.localPosition += v;
+            _playerParts.Eyes.transform.localPosition += 2*v;
+            _playerParts.Nose.transform.localPosition += 2*v;
+        });
+        
+        Utils.InvokeDelayed(() =>
+        {
+            breath(-dir);
+        }, over);
     }
 
     public void ClickOnPlayer()
@@ -174,19 +255,9 @@ public class ShopGameLogic : MonoBehaviour
         {
             _isDirLeft = !_isDirLeft;
 
-            Vector3 scale;
-
-            scale = _playerObj.transform.localScale;
+            Vector3 scale = _playerObj.transform.localScale;
             scale.x = -scale.x;
             _playerObj.transform.localScale = scale;
-            
-            scale = _playerPillowSpriteRenderer.transform.localScale;
-            scale.x = -scale.x;
-            _playerPillowSpriteRenderer.transform.localScale = scale;
-            
-            scale = _playerPillowShadowSpriteRenderer.transform.localScale;
-            scale.x = -scale.x;
-            _playerPillowShadowSpriteRenderer.transform.localScale = scale;
         }
     }
 }
