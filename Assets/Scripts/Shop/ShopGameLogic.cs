@@ -21,8 +21,6 @@ public class ShopGameLogic : MonoBehaviour
     
     private Vector2 _moveForce;
 
-    private Rect _bounds;
-
     private bool _isDirLeft = true;
 
     private bool _inAnim;
@@ -43,9 +41,7 @@ public class ShopGameLogic : MonoBehaviour
         
        _playerObj.GetComponent<ShopPlayerIO>().ShopGameLogic = this;
         
-        SetupBounds();
-        
-        _playerObj.transform.position = new Vector3(0, _bounds.yMin, -2f);
+        _playerObj.transform.position = new Vector3(0, -1f, -2f);
         
         PlayerState.LoadFromPrefs();
         
@@ -54,15 +50,27 @@ public class ShopGameLogic : MonoBehaviour
         
         var playerCloth = _playerView.transform.Find("Cloth");        
         _playerClothSpriteRenderer = playerCloth.GetComponent<SpriteRenderer>();
+        if (PlayerState.ClothIndex >= Clothes.Sprites.Count)
+        {
+            PlayerState.ClothIndex = 0;
+        }
         _playerClothSpriteRenderer.sprite = Clothes.Sprites[PlayerState.ClothIndex];
-        playerCloth.gameObject.SetActive(true);
+        playerCloth.gameObject.SetActive(false);
         
         var playerPillow = GameObject.Find("Pillow");
         _playerPillowSpriteRenderer = playerPillow.GetComponent<SpriteRenderer>();
+        if (PlayerState.PillowIndex >= Pillows.Sprites.Count)
+        {
+            PlayerState.PillowIndex = 0;
+        }
         _playerPillowSpriteRenderer.sprite = Pillows.Sprites[PlayerState.PillowIndex][PillowState.Idle];
         //playerPillow.gameObject.SetActive(true);
         
         _playerPillowShadowSpriteRenderer = GameObject.Find("PillowShadow").GetComponent<SpriteRenderer>();
+        if (null == _playerPillowShadowSpriteRenderer)
+        {
+            Application.Quit();
+        }
     }
 
     public void ChangeSmth(PlayerSmth smth, bool next)
@@ -97,20 +105,6 @@ public class ShopGameLogic : MonoBehaviour
         }
     }
 
-    private void SetupBounds()
-    {
-        var topRightPoint = _camera.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, 0));
-
-        var size = _playerObj.GetComponent<CircleCollider2D>().radius;
-        var viewScale = _playerView.transform.localScale;
-
-        var halfWidth = size * viewScale.x;
-        
-        _bounds.xMin = -topRightPoint.x + halfWidth;
-        _bounds.xMax = topRightPoint.x - halfWidth;
-        _bounds.yMin = -1f;
-    }
-
     private void ClickAnim()
     {
         const float animationWindow = 0.1f;
@@ -139,6 +133,7 @@ public class ShopGameLogic : MonoBehaviour
             v.y = 0;
             PilST.localScale -= 4*v;
         });
+        
         Utils.InvokeDelayed(() =>
         {
             _playerPillowSpriteRenderer.sprite = Pillows.GetActive(PillowState.Idle);
@@ -159,10 +154,11 @@ public class ShopGameLogic : MonoBehaviour
                 Utils.Animate(steps[1], Vector3.zero, animationWindow, (v) => { PetT.localScale += v; });
                 Utils.InvokeDelayed(() =>
                 {
+                    _playerPillowSpriteRenderer.sprite = Pillows.GetActive(PillowState.Idle);
                     _inAnim = false;
                 }, animationWindow);
             }, animationWindow);
-        }, animationWindow);        
+        }, animationWindow);
     }
 
     public void ClickOnPlayer()
@@ -177,11 +173,20 @@ public class ShopGameLogic : MonoBehaviour
         if (Random.value < 0.5f)
         {
             _isDirLeft = !_isDirLeft;
-            _playerObj.transform.localScale = new Vector3(
-                -_playerObj.transform.localScale.x,
-                _playerObj.transform.localScale.y,
-                _playerObj.transform.localScale.z
-            );
+
+            Vector3 scale;
+
+            scale = _playerObj.transform.localScale;
+            scale.x = -scale.x;
+            _playerObj.transform.localScale = scale;
+            
+            scale = _playerPillowSpriteRenderer.transform.localScale;
+            scale.x = -scale.x;
+            _playerPillowSpriteRenderer.transform.localScale = scale;
+            
+            scale = _playerPillowShadowSpriteRenderer.transform.localScale;
+            scale.x = -scale.x;
+            _playerPillowShadowSpriteRenderer.transform.localScale = scale;
         }
     }
 }
