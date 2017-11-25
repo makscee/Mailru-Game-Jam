@@ -15,7 +15,7 @@ public class RoomGameLogic : MonoBehaviour
 
     //private Object _stepPrefab;
 
-    private bool _isDirRight = true;
+    private bool _isDirLeft = true;
     
     private void Awake()
     {
@@ -38,20 +38,24 @@ public class RoomGameLogic : MonoBehaviour
         _playerObj.transform.position = new Vector3(0, _bounds.yMin, -2f);
         
         PlayerState.LoadFromPrefs();
+        
+        Cloth.Load();
     }
 
     private void SetupBounds()
     {
         Vector3 topRightPoint = _camera.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, 0));
 
-        var size = _playerView.GetComponent<SpriteRenderer>().sprite.bounds.size;
+        var size = _playerObj.GetComponent<CircleCollider2D>().radius;
+        
+        //var size = _playerView.GetComponent<SpriteRenderer>().sprite.bounds.size;
         var viewScale = _playerView.transform.localScale;
 
-        var halfWidth = size.x / 2 * viewScale.x;
+        var halfWidth = size * viewScale.x;
         
         _bounds.xMin = -topRightPoint.x + halfWidth;
         _bounds.xMax = topRightPoint.x - halfWidth;
-        _bounds.yMin = -4f;
+        _bounds.yMin = -0.7f;
     }
 
     private void FixedUpdate()
@@ -106,10 +110,10 @@ public class RoomGameLogic : MonoBehaviour
             float xForce = (Random.value - 0.5f) * 20f;
             _moveForce = new Vector2(xForce, 25f);
 
-            _isDirRight = xForce > 0;
+            _isDirLeft = xForce < 0;
             var scale = _playerObj.transform.localScale;
             scale.x = Math.Abs(scale.x);
-            if (!_isDirRight)
+            if (!_isDirLeft)
             {
                 scale.x = -scale.x;
             }
