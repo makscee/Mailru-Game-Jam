@@ -39,7 +39,7 @@ public class PointerController : MonoBehaviour
         _moving = true;
     }
 
-    public float StopMoving()
+    public int StopMoving()
     {
         _moving = false;
         var s1 = ScaleController.Instance.Size1 / 2;
