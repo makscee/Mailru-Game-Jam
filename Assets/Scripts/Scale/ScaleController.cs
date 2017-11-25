@@ -24,10 +24,11 @@ public class ScaleController : MonoBehaviour
 
     private void Awake()
     {
+        Rt = GetComponent<RectTransform>();
+        Rt.sizeDelta = new Vector2(Screen.width, 30);
         Instance = this;
         _pc = Pointer.GetComponent<PointerController>();
-        Rt = GetComponent<RectTransform>();
-        _offScreen = -Screen.height / 2f - Rt.rect.height;
+        _offScreen = Screen.height / 2f + Rt.rect.height;
         Rt.anchoredPosition = new Vector2(0, _offScreen);
         var width = Rt.rect.width;
         SubScale1.anchoredPosition = new Vector2(-width / 4, 0);
@@ -67,6 +68,21 @@ public class ScaleController : MonoBehaviour
         BattleState = BattleState.Stopped;
         Utils.InvokeDelayed(() => { Scores.AddScorePlayer(res * 100 * (0.9f + 0.2f * UnityEngine.Random.value)); },
             0.5f);
+        var c = Color.white;
+        switch (res)
+        {
+            case 0:
+                StartCoroutine(ShakeBar());
+                break;
+            case 1:
+                c = Color.yellow;
+                break;
+            case 4:
+                c = Color.red;
+                break;
+        }
+        var pos = Camera.main.ScreenToWorldPoint(_pc.transform.position);
+        Effects.ExplosionEffect(pos, c);
         Utils.InvokeDelayed(() =>
         {
             _pc.Reset();
@@ -79,6 +95,22 @@ public class ScaleController : MonoBehaviour
     public RectTransform CandyBar;
 
     private int _candyUse = 5;
+
+    private IEnumerator ShakeBar()
+    {
+        var t = 0.3f;
+        while (t > 0)
+        {
+            t -= Time.deltaTime;
+            var v1 = UnityEngine.Random.value - 0.5f;
+            var v2 = UnityEngine.Random.value - 0.5f;
+            const float mult = 30f;
+            Rt.anchoredPosition = new Vector2(v1 * mult, v2 * mult);
+            yield return null;
+        }
+        Rt.anchoredPosition = Vector2.zero;
+    }
+
     private IEnumerator CandyCoroutine()
     {
         var t = 1f;
