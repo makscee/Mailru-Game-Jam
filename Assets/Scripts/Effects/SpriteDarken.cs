@@ -17,6 +17,11 @@ public class SpriteDarken : MonoBehaviour
         }
     }
 
+    public static void Reset()
+    {
+        _update = () => { };
+    }
+
     private void Awake()
     {
         var sr = GetComponent<SpriteRenderer>();

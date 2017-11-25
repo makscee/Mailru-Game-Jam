@@ -2,5 +2,5 @@
 
 public class Scores
 {
-    public static int Combo;
+    public static int Combo, ScorePlayer, ScoreEnemy;
 }
