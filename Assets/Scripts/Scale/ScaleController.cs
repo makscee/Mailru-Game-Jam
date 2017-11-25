@@ -18,7 +18,7 @@ public class ScaleController : MonoBehaviour
     public Text CandyCount, CandyUseText;
     public float Size1, Size2;
     private PointerController _pc;
-    private float _offScreen;
+    private float _offScreen, _onScreen;
     public static RectTransform Rt;
     public static ScaleController Instance;
 
@@ -29,6 +29,7 @@ public class ScaleController : MonoBehaviour
         Instance = this;
         _pc = Pointer.GetComponent<PointerController>();
         _offScreen = Screen.height / 2f + Rt.rect.height;
+        _onScreen = _offScreen / 2;
         Rt.anchoredPosition = new Vector2(0, _offScreen);
         var width = Rt.rect.width;
         SubScale1.anchoredPosition = new Vector2(-width / 4, 0);
@@ -66,8 +67,6 @@ public class ScaleController : MonoBehaviour
     {
         var res = _pc.StopMoving();
         BattleState = BattleState.Stopped;
-        Utils.InvokeDelayed(() => { Scores.AddScorePlayer(res * 100 * (0.9f + 0.2f * UnityEngine.Random.value)); },
-            0.5f);
         var c = Color.white;
         switch (res)
         {
@@ -88,7 +87,19 @@ public class ScaleController : MonoBehaviour
             _pc.Reset();
             SetScale(Size1 / 1.5f, SubScale1);
             SetScale(Size2 / 1.5f, SubScale2);
-            StartCoroutine(CandyCoroutine());
+
+            Hide();
+            Scores.AddScorePlayer(res * 100 * (0.9f + 0.2f * UnityEngine.Random.value));
+            Utils.InvokeDelayed(() =>
+            {
+                CameraScript.Instance.FocusOn(BattleLevel.Instance.Enemy.transform.position);
+                Utils.InvokeDelayed(() => Scores.AddScoreEnemy(100), 1f);
+            }, 1f);
+            Utils.InvokeDelayed(() =>
+            {
+                CameraScript.Instance.FocusOn(BattleLevel.Instance.Player.transform.position);
+                StartCoroutine(CandyCoroutine());
+            }, 3f);
         }, 1f);
     }
 
@@ -105,25 +116,35 @@ public class ScaleController : MonoBehaviour
             var v1 = UnityEngine.Random.value - 0.5f;
             var v2 = UnityEngine.Random.value - 0.5f;
             const float mult = 30f;
-            Rt.anchoredPosition = new Vector2(v1 * mult, v2 * mult);
+            Rt.anchoredPosition = new Vector2(v1 * mult, _onScreen + v2 * mult);
             yield return null;
         }
-        Rt.anchoredPosition = Vector2.zero;
+        Rt.anchoredPosition = new Vector2(0, _onScreen);
+    }
+
+    private void Hide()
+    {
+        Utils.Animate(Rt.anchoredPosition, new Vector2(0f, _offScreen), 0.3f, v => Rt.anchoredPosition = v,
+            null, true);
+        Utils.Animate(0.5f, 1f, 0.3f, v => CameraScript.Instance.SetScreenDarkness(v),
+            null, true);
     }
 
     private IEnumerator CandyCoroutine()
     {
         var t = 1f;
         BattleState = BattleState.Candy;
+        Utils.Animate(1f, 0.5f, 0.3f, v => CameraScript.Instance.SetScreenDarkness(v),
+            null, true);
         Utils.Animate(Rt.anchoredPosition, new Vector2(0f, _offScreen / 2), 0.3f, v => Rt.anchoredPosition = v,
             null, true);
-        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSeconds(1f);
         CandyUseText.text = "x" + _candyUse;
         CandyUseText.gameObject.SetActive(true);
         CandyUseText.fontSize = 45;
         while (t > 0)
         {
-            t -= Time.deltaTime;
+            t -= Time.deltaTime / 2;
             CandyBar.sizeDelta = new Vector2(300f * t, CandyBar.rect.height);
             if (TapDown() && PlayerState.CandiesCount - _candyUse >= 0)
             {
@@ -148,15 +169,17 @@ public class ScaleController : MonoBehaviour
         }
         yield return new WaitForSeconds(0.4f);
         CandyBar.sizeDelta = new Vector2(0f, CandyBar.rect.height);
+        Hide();
         BattleState = BattleState.Hidden;
-        Utils.Animate(Rt.anchoredPosition, new Vector2(0f, _offScreen), 0.3f, v => Rt.anchoredPosition = v,
-            null, true);
         CandyUseText.gameObject.SetActive(false);
     }
 
     public void Run()
     {
-        Utils.Animate(Rt.anchoredPosition, new Vector2(0f, 0f), 0.3f, (v) => { Rt.anchoredPosition = v; }, null, true);
+        Utils.Animate(1f, 0.5f, 0.3f, v => CameraScript.Instance.SetScreenDarkness(v),
+            null, true);
+        Utils.Animate(Rt.anchoredPosition, new Vector2(0f, _onScreen), 0.3f, v => Rt.anchoredPosition = v,
+            null, true);
         BattleState = BattleState.PreStart;
         Utils.InvokeDelayed(() =>
         {
