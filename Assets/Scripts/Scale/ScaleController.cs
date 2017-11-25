@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 public enum BattleState
 {
@@ -14,6 +15,7 @@ public enum BattleState
 public class ScaleController : MonoBehaviour
 {
     public RectTransform SubScale1, SubScale2, Pointer;
+    public Text CandyCount, CandyUseText;
     public float Size1, Size2;
     private PointerController _pc;
     private float _offScreen;
@@ -32,6 +34,7 @@ public class ScaleController : MonoBehaviour
         SubScale2.anchoredPosition = new Vector2(width / 4, 0);
         SetScale(0.3f, SubScale1);
         SetScale(0.05f, SubScale2);
+        PlayerState.LoadFromPrefs();
     }
 
     public BattleState BattleState;
@@ -75,6 +78,7 @@ public class ScaleController : MonoBehaviour
 
     public RectTransform CandyBar;
 
+    private int _candyUse = 5;
     private IEnumerator CandyCoroutine()
     {
         var t = 1f;
@@ -82,15 +86,25 @@ public class ScaleController : MonoBehaviour
         Utils.Animate(Rt.anchoredPosition, new Vector2(0f, _offScreen / 2), 0.3f, v => Rt.anchoredPosition = v,
             null, true);
         yield return new WaitForSeconds(0.3f);
+        CandyUseText.text = "x" + _candyUse;
+        CandyUseText.gameObject.SetActive(true);
+        CandyUseText.fontSize = 45;
         while (t > 0)
         {
             t -= Time.deltaTime;
             CandyBar.sizeDelta = new Vector2(300f * t, CandyBar.rect.height);
-            if (TapDown())
+            if (TapDown() && PlayerState.CandiesCount - _candyUse >= 0)
             {
                 SetScale(Size1 * 1.5f, SubScale1);
                 SetScale(Size2 * 1.5f, SubScale2);
                 t = 1f;
+                PlayerState.CandiesCount -= _candyUse;
+                _candyUse *= 2;
+                CandyUseText.text = "x" + _candyUse;
+                if (CandyUseText.fontSize < 100)
+                {
+                    CandyUseText.fontSize += 10;
+                }
                 if (Size1 > 0.44f)
                 {
                     SetScale(0.45f, SubScale1);
@@ -100,10 +114,12 @@ public class ScaleController : MonoBehaviour
             }
             yield return null;
         }
+        yield return new WaitForSeconds(0.4f);
         CandyBar.sizeDelta = new Vector2(0f, CandyBar.rect.height);
         BattleState = BattleState.Hidden;
         Utils.Animate(Rt.anchoredPosition, new Vector2(0f, _offScreen), 0.3f, v => Rt.anchoredPosition = v,
             null, true);
+        CandyUseText.gameObject.SetActive(false);
     }
 
     public void Run()

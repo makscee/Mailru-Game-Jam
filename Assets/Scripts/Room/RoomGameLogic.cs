@@ -2,7 +2,6 @@
 
 public class RoomGameLogic : MonoBehaviour
 {
-    private Player _player;
     private GameObject _playerObj;
     private Rigidbody2D _playerObjRigidbody2D;
 
@@ -19,7 +18,7 @@ public class RoomGameLogic : MonoBehaviour
             _camera = Camera.main;
         }
         
-        Vector3 topRightPoint = _camera.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, 0));
+        var topRightPoint = _camera.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, 0));
 
         _leftWall.transform.position = new Vector3(-topRightPoint.x, _leftWall.transform.position.y, _leftWall.transform.position.z);
         _rightWall.transform.position = new Vector3(topRightPoint.x, _rightWall.transform.position.y, _rightWall.transform.position.z);
@@ -35,14 +34,14 @@ public class RoomGameLogic : MonoBehaviour
         
         _playerObj.GetComponent<RoomPlayerIO>().RoomGameLogic = this;;
         
-        _player = new Player(_playerObj);
+        PlayerState.LoadFromPrefs();
     }
 
     public void ClickOnPlayer()
     {
         if (Mathf.Abs(_playerObjRigidbody2D.velocity.magnitude) <= Mathf.Epsilon)
         {
-            _player.Tickle();
+            PlayerState.Tickle();
 
             float xForce = 100; //(Random.value - 0.5f) * _jumpForce[0];
             _playerObjRigidbody2D.AddForce(new Vector2(xForce, _jumpForce[1]));
