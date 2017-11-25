@@ -51,7 +51,7 @@ public class RoomGameLogic : MonoBehaviour
         
         _bounds.xMin = -topRightPoint.x + halfWidth;
         _bounds.xMax = topRightPoint.x - halfWidth;
-        _bounds.yMin = -8f;
+        _bounds.yMin = -4f;
     }
 
     private void FixedUpdate()
