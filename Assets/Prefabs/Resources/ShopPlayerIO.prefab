@@ -19,10 +19,10 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4979717338127122}
-  - component: {fileID: 114956297337138036}
   - component: {fileID: 58140768469363394}
+  - component: {fileID: 114867170483409348}
   m_Layer: 0
-  m_Name: RoomPlayerIO
+  m_Name: ShopPlayerIO
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -55,8 +55,8 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 3
---- !u!114 &114956297337138036
+  m_Radius: 4
+--- !u!114 &114867170483409348
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -67,4 +67,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ca66bb1feb119d4e960e9bb181a6885, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  RoomGameLogic: {fileID: 0}
+  ShopGameLogic: {fileID: 0}

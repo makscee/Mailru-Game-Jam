@@ -28,7 +28,7 @@ public class CameraScript : MonoBehaviour
     }
 
     public Material ScreenDarken;
-    private float _darkenValue = 1f;
+    public float _darkenValue = 1f;
 
     public void SetScreenDarkness(float v)
     {
@@ -37,6 +37,11 @@ public class CameraScript : MonoBehaviour
     
     private void OnRenderImage (RenderTexture source, RenderTexture destination)
     {
+        if (_darkenValue >= 1)
+        {
+            Graphics.Blit(source, destination);
+            return;
+        }
         ScreenDarken.SetFloat("_Value", _darkenValue);
         Graphics.Blit (source, destination, ScreenDarken);
     }
