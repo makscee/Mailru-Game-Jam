@@ -17,7 +17,10 @@ public class PlayerState
 		set
 		{
 			_candiesCount = value;
-			ScaleController.Instance.CandyCount.text = value.ToString();
+			if (ScaleController.Instance != null)
+			{
+				ScaleController.Instance.CandyCount.text = value.ToString();
+			}
 		}
 	}
 
