@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.U2D;
 
 public enum PillowState
 {
 	Idle,
-	Compress,
 	Up,
-	Down
+	//Compress,
+	//Down
 }
 
 public class Pillows {
@@ -15,16 +14,19 @@ public class Pillows {
 
 	public static void Load()
 	{
-		SpriteAtlas atlasPurple = Resources.Load<SpriteAtlas>("Pillows/pillowPurple");
+		var pillowIdle = Resources.Load<Sprite>("Pet/pillow");
+		var pillowUp = Resources.Load<Sprite>("Pet/pillow_up");
+		
+		//SpriteAtlas atlasPurple = Resources.Load<SpriteAtlas>("Pillows/pillowPurple");
 		
 		Sprites = new List<Dictionary<PillowState, Sprite>>
 		{
 			new Dictionary<PillowState, Sprite>
 			{
-				{PillowState.Idle, atlasPurple.GetSprite("pillowIdle_purple")},				
-				{PillowState.Compress, atlasPurple.GetSprite("pillowCompress_purple")},				
-				{PillowState.Up, atlasPurple.GetSprite("pillowUp_purple")},				
-				{PillowState.Down, atlasPurple.GetSprite("pillowDown_purple")},				
+				{PillowState.Idle, pillowIdle},				
+				{PillowState.Up, pillowUp},
+				//{PillowState.Compress, atlasPurple.GetSprite("pillowCompress_purple")},				
+				//{PillowState.Down, atlasPurple.GetSprite("pillowDown_purple")},				
 			}
 		};
 	}
