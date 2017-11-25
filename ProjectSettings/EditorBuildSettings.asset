@@ -5,6 +5,9 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Room.unity
     guid: 0824efee71981441fb2f74179758bdbc
+  - enabled: 1
+    path: Assets/Battle.unity
+    guid: d12edc1b1611c45f19d97c4838c061bc

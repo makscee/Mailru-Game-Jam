@@ -190,7 +190,16 @@ public class ScaleController : MonoBehaviour
 
     public static bool TapDown()
     {
-        return Input.GetKeyDown(KeyCode.Space);
+        if (Input.GetKeyDown(KeyCode.Space)) return true;
+        if (Input.touchCount > 0)
+        {
+            for (var i = 0; i < Input.touchCount; ++i)
+            {
+                if (Input.GetTouch(i).phase != TouchPhase.Began) continue;
+                return true;
+            }
+        }
+        return false;
     }
 
     public void SetScale(float size, RectTransform scale)
