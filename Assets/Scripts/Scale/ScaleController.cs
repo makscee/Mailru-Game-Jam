@@ -2,6 +2,7 @@
 using System.Collections;
 using JetBrains.Annotations;
 using UnityEngine;
+using UnityEngine.SocialPlatforms.Impl;
 using UnityEngine.UI;
 
 public enum BattleState
@@ -72,6 +73,14 @@ public class ScaleController : MonoBehaviour
     private void AddCombo()
     {
         Scores.Combo++;
+        if (_curPlayer == BattleLevel.Instance.Player)
+        {
+            Scores.ScorePlayer = Scores.Combo;
+        }
+        else
+        {
+            Scores.ScoreEnemy = Scores.Combo;
+        }
         _curComboText.text = "x" + Scores.Combo;
         _curComboText.fontSize = Math.Min(400, PlayerComboText.fontSize + 30);
         _curComboText.transform.rotation = Quaternion.AngleAxis(UnityEngine.Random.Range(-25, 25), Vector3.forward);
@@ -150,7 +159,8 @@ public class ScaleController : MonoBehaviour
                 }
                 else
                 {
-                    Winner.gameObject.SetActive(true);
+//                    Winner.gameObject.SetActive(true);
+                    Results.Run();
                     Hide();
                     HideComboText(_curComboText);
                     return;
@@ -172,6 +182,7 @@ public class ScaleController : MonoBehaviour
         CutSubscale(_pc.transform.position.x);
         Effects.ExplosionEffect(pos, c);
         _pc.StopMoving();
+        BattleState = BattleState.Stopped;
         SwitchPlayer();
     }
 
