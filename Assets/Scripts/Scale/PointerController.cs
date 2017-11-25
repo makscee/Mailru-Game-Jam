@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class PointerController : MonoBehaviour
 {
@@ -15,16 +16,29 @@ public class PointerController : MonoBehaviour
         SetPosition(0f);
     }
 
-    private bool _moving = false;
+    private int _moving = 0;
 
+    private bool _clicked = false;
     private void Update()
     {
-        if (!_moving) return;
-        _current += _speed * Time.deltaTime;
+        if (_moving == 0) return;
+        _current += _speed * Time.deltaTime * _moving;
         SetPosition(_current);
+        if ((_current > 1f || _current < 0f) && !_clicked)
+        {
+            ScaleController.Instance.Check();
+            return;
+        }
         if (_current > 1f)
         {
-            ScaleController.Instance.Stop();
+            _clicked = false;
+            SetPosition(1);
+            _moving = -1;
+        } else if (_current < 0)
+        {
+            _clicked = false;
+            SetPosition(0);
+            _moving = 1;
         }
     }
 
@@ -36,23 +50,25 @@ public class PointerController : MonoBehaviour
 
     public void StartMoving()
     {
-        _moving = true;
+        _moving = 1;
     }
 
-    public int StopMoving()
+    public int CheckPointer()
     {
-        _moving = false;
-        var s1 = ScaleController.Instance.Size1 / 2;
-        var s2 = ScaleController.Instance.Size2 / 2;
-        if (_current > 0.25 - s1 && _current < 0.25 + s1)
+        _clicked = true;
+        var size = ScaleController.Instance.SubScale.rect.width / 2;
+        var pos = ScaleController.Instance.SubScale.position.x;
+        var curPos = transform.position.x;
+        if (curPos > pos - size && curPos < pos + size)
         {
             return 1;
         }
-        if (_current > 0.75 - s2 && _current < 0.75 + s2)
-        {
-            return 4;
-        }
         return 0;
+    }
+
+    public void StopMoving()
+    {
+        _moving = 0;
     }
 
     private void SetPosition(float v)

@@ -34,15 +34,4 @@ public class CameraScript : MonoBehaviour
     {
         _darkenValue = v;
     }
-    
-    private void OnRenderImage (RenderTexture source, RenderTexture destination)
-    {
-        if (_darkenValue >= 1)
-        {
-            Graphics.Blit(source, destination);
-            return;
-        }
-        ScreenDarken.SetFloat("_Value", _darkenValue);
-        Graphics.Blit (source, destination, ScreenDarken);
-    }
 }
