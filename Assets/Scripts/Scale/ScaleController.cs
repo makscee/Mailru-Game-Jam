@@ -171,16 +171,16 @@ public class ScaleController : MonoBehaviour
 //                    Quaternion.AngleAxis(UnityEngine.Random.Range(-25, 25), Vector3.forward);
                 break;
             case 1:
-                c = Color.yellow;
+                var pos = Camera.main.ScreenToWorldPoint(_pc.transform.position);
+                Effects.ExplosionEffect(pos);
+                if (UnityEngine.Random.value > 0.5f || true)
+                {
+                    Effects.HeartsEffect(_curPlayer.transform.position, 2);
+                }
                 AddCombo();
                 break;
-            case 4:
-                c = Color.red;
-                break;
         }
-        var pos = Camera.main.ScreenToWorldPoint(_pc.transform.position);
         CutSubscale(_pc.transform.position.x);
-        Effects.ExplosionEffect(pos, c);
         _pc.StopMoving();
         BattleState = BattleState.Stopped;
         SwitchPlayer();

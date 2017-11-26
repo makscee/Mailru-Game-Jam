@@ -27,17 +27,17 @@ public class Results : MonoBehaviour
         const int fontIncrease = 10;
         do
         {
-            yield return new WaitForSeconds(0.2f);
+            yield return new WaitForSeconds(0.3f);
             if (pScore < Scores.ScorePlayer)
             {
                 pScore++;
-                Effects.ExplosionEffect(PlayerCombo.transform.position, PlayerCombo.color, 25);
+                Effects.ExplosionEffect(PlayerCombo.transform.position, 25);
                 PlayerCombo.fontSize = Math.Min(150, PlayerCombo.fontSize + fontIncrease);
             }
             if (eScore < Scores.ScoreEnemy)
             {
                 eScore++;
-                Effects.ExplosionEffect(EnemyCombo.transform.position, EnemyCombo.color, 25);
+                Effects.ExplosionEffect(EnemyCombo.transform.position, 25);
                 EnemyCombo.fontSize = Math.Min(150, EnemyCombo.fontSize + fontIncrease);
             }
             PlayerCombo.text = "x" + pScore;
