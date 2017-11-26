@@ -1,11 +1,5 @@
 ﻿using UnityEngine;
 
-public enum PlayerSmth
-{
-    Cloth,
-    Pillow
-}
-
 public class PlayerParts
 {
     public SpriteRenderer Body;

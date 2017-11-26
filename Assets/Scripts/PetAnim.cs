@@ -55,7 +55,6 @@ public class PetAnim
     {
         View.EyeType = (EyeType)Random.Range((int)EyeType.Blink1, Eyes.Count());
         View.NoseType = (NoseType)Random.Range(0, Noses.Count());
-        //PlayerView.SuitType = (SuitType)Random.Range(0, Suits.Count());
     }
 
     public void SetFace(EyeType e, NoseType n)

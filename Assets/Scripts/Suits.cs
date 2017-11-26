@@ -4,7 +4,8 @@ using UnityEngine;
 public enum SuitType
 {
     None,
-    Croc
+    Croc,
+    Pig
 }
 
 public class SuitInfo
@@ -28,11 +29,20 @@ public class Suits
             PawsUp = Resources.Load<Sprite>("Croc/paws_up"),
             Tail = Resources.Load<Sprite>("Croc/tail"),
         };
+        
+        var pig = new SuitInfo
+        {
+            Body = Resources.Load<Sprite>("Pig/body"),
+            PawsDown = Resources.Load<Sprite>("Pig/paws_down"),
+            PawsUp = Resources.Load<Sprite>("Pig/paws_up"),
+            Tail = Resources.Load<Sprite>("Pig/tail"),
+        };
 
         _suits = new Dictionary<SuitType, SuitInfo>()
         {
             {SuitType.None, null},
             {SuitType.Croc, croc},
+            {SuitType.Pig, pig},
         };
     }
 
