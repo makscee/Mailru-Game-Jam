@@ -20,7 +20,7 @@ public class Paws {
         };
     }
 
-    public static Sprite GetActive(PawsType type)
+    public static Sprite Get(PawsType type)
     {
         return _sprites[type];
     }

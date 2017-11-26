@@ -9,6 +9,7 @@ public enum PlayerSmth
 public class PlayerParts
 {
     public SpriteRenderer Body;
+    public SpriteRenderer Suit;
     public SpriteRenderer Paws;
     public SpriteRenderer Nose;
     public SpriteRenderer Tail;
@@ -57,8 +58,8 @@ public class ShopGameLogic : MonoBehaviour
         
         PlayerState.LoadFromPrefs();
         
-        Clothes.Load();
-        Pillows.Load();
+        Suits.Load();
+        Tails.Load();
         Eyes.Load();
         Noses.Load();
         Paws.Load();
@@ -73,6 +74,7 @@ public class ShopGameLogic : MonoBehaviour
         playerCloth.gameObject.SetActive(false);*/
         
         _PlayerParts.Body = _playerView.transform.Find("Body").GetComponent<SpriteRenderer>();
+        _PlayerParts.Suit = _playerView.transform.Find("Suit").GetComponent<SpriteRenderer>();
         _PlayerParts.Paws = _playerView.transform.Find("Paws").GetComponent<SpriteRenderer>();
         _PlayerParts.Nose = _playerView.transform.Find("Nose").GetComponent<SpriteRenderer>();
         _PlayerParts.Tail = _playerView.transform.Find("Tail").GetComponent<SpriteRenderer>();
@@ -83,24 +85,25 @@ public class ShopGameLogic : MonoBehaviour
         mainPartsT = new Transform[]
         {
             _PlayerParts.Body.transform,
+            _PlayerParts.Suit.transform,
             _PlayerParts.Paws.transform,
             _PlayerParts.Nose.transform,
             _PlayerParts.Tail.transform,
             _PlayerParts.Eyes.transform,
         };
         
-        if (PlayerState.PillowIndex >= Pillows.Sprites.Count)
+        /*if (PlayerState.PillowIndex >= Pillows.Sprites.Count)
         {
             PlayerState.PillowIndex = 0;
         }
-        _PlayerParts.Pillow.sprite = Pillows.Sprites[PlayerState.PillowIndex][PillowState.Idle];
+        _PlayerParts.Pillow.sprite = Pillows.Sprites[PlayerState.PillowIndex][PillowState.Idle];*/
         //playerPillow.gameObject.SetActive(true);
-        
-        _PlayerParts.Shadow = _playerView.transform.Find("Shadow").GetComponent<SpriteRenderer>();
 
         PlayerView.EyeType = EyeType.Center3;
         PlayerView.NoseType = NoseType.Nose1;
         PlayerView.PawsType = PawsType.Down;
+        PlayerView.TailState = TailState.Normal;
+        PlayerView.SuitType = SuitType.None;
     }
 
     private void Start()
@@ -108,7 +111,7 @@ public class ShopGameLogic : MonoBehaviour
         breath(1);
     }
 
-    public void ChangeSmth(PlayerSmth smth, bool next)
+    /*public void ChangeSmth(PlayerSmth smth, bool next)
     {
         int curIdx, len;
         if (PlayerSmth.Cloth == smth)
@@ -138,7 +141,7 @@ public class ShopGameLogic : MonoBehaviour
             PlayerState.PillowIndex = curIdx;
             _PlayerParts.Pillow.sprite = Pillows.GetActive(PillowState.Idle);
         }
-    }
+    }*/
 
     private void ClickAnim()
     {
@@ -159,7 +162,7 @@ public class ShopGameLogic : MonoBehaviour
         var PillowT = _PlayerParts.Pillow.transform;
         var ShadowT = _PlayerParts.Shadow.transform;
         
-        PlayerView.PawsType = PawsType.Up;
+        PlayerView.SetPaws(true);
 
         // Up
         
@@ -217,7 +220,7 @@ public class ShopGameLogic : MonoBehaviour
             Utils.InvokeDelayed(() =>
             {
                 // Restore
-                PlayerView.PawsType = PawsType.Down;
+                PlayerView.SetPaws(false);
                 
                 Utils.Animate(steps[1], Vector3.zero, animationWindow, (v) =>
                 {
@@ -244,6 +247,10 @@ public class ShopGameLogic : MonoBehaviour
             
             _PlayerParts.Body.transform.localScale += v;
             _PlayerParts.Body.transform.localPosition += v;
+            
+            _PlayerParts.Suit.transform.localScale += v;
+            _PlayerParts.Suit.transform.localPosition += v;
+            
             _PlayerParts.Eyes.transform.localPosition += 2*v;
             _PlayerParts.Nose.transform.localPosition += 2*v;
 
@@ -278,6 +285,7 @@ public class ShopGameLogic : MonoBehaviour
     {
         PlayerView.EyeType = (EyeType)Random.Range((int)EyeType.Blink1, Eyes.Count());
         PlayerView.NoseType = (NoseType)Random.Range(0, Noses.Count());
+        PlayerView.SuitType = (SuitType)Random.Range(0, Suits.Count());
     }
 
     public void ClickOnPlayer()

@@ -15,6 +15,6 @@ public class ScrollBtn : MonoBehaviour
 	
 	private void Clicked()
 	{
-		ShopGameLogic.Instance.ChangeSmth(PlayerSmth, DirLeft);
+		//ShopGameLogic.Instance.ChangeSmth(PlayerSmth, DirLeft);
 	}
 }

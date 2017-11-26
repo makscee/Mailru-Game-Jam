@@ -45,7 +45,7 @@ public class Eyes {
 		}
 	}
 
-	public static Sprite GetActive(EyeType type)
+	public static Sprite Get(EyeType type)
 	{
 		return _sprites[type];
 	}

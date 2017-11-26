@@ -26,7 +26,7 @@ public class Noses {
 		}
 	}
 
-	public static Sprite GetActive(NoseType type)
+	public static Sprite Get(NoseType type)
 	{
 		return _sprites[type];
 	}
