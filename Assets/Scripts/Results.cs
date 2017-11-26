@@ -2,6 +2,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.SocialPlatforms.Impl;
 using UnityEngine.UI;
 
 public class Results : MonoBehaviour
@@ -50,6 +51,9 @@ public class Results : MonoBehaviour
             if (ScaleController.TapDown())
             {
                 SpriteDarken.Reset();
+                Scores.Combo = 0;
+                Scores.ScorePlayer = 0;
+                Scores.ScoreEnemy = 0;
                 SceneManager.LoadScene("Battle");
             }
             yield return null;

@@ -27,12 +27,12 @@ public class ScaleController : MonoBehaviour
     private void Awake()
     {
         Rt = GetComponent<RectTransform>();
-        Rt.sizeDelta = new Vector2(Screen.width, 30);
+        Rt.sizeDelta = new Vector2(Screen.width - 60, Rt.rect.height);
         Instance = this;
         _pc = Pointer.GetComponent<PointerController>();
         _offScreen = Screen.height / 2f + Rt.rect.height;
         _ctOffScreen = Screen.width / 2f + Rt.rect.width;
-        _onScreen = _offScreen / 2;
+        _onScreen = _offScreen / 4 * 3;
         Rt.anchoredPosition = new Vector2(0, _offScreen);
         var width = Rt.rect.width;
         SubScale.anchoredPosition = new Vector2(UnityEngine.Random.value * width / 3 - width / 6, 0);
@@ -116,11 +116,14 @@ public class ScaleController : MonoBehaviour
                 HideComboText(PlayerComboText);
                 Utils.InvokeDelayed(() =>
                 {
-                    CameraScript.Instance.FocusOn(_curPlayer.transform.position);
-                    ShowComboText(EnemyComboText);
+                    CameraScript.Instance.FocusOn(new Vector3(_curPlayer.transform.position.x, 0, 0));
                 }, 1f);
                 Utils.InvokeDelayed(
-                    () => Run(), 2f);
+                    () =>
+                    {
+                        Run();
+                        ShowComboText(EnemyComboText);
+                    }, 2f);
             }, 1f);
         }
         else
@@ -134,11 +137,15 @@ public class ScaleController : MonoBehaviour
                 HideComboText(EnemyComboText);
                 Utils.InvokeDelayed(() =>
                 {
-                    CameraScript.Instance.FocusOn(_curPlayer.transform.position);
-                    ShowComboText(PlayerComboText);
+                    CameraScript.Instance.FocusOn(new Vector3(_curPlayer.transform.position.x, 0, 0));
+                    
                 }, 1f);
                 Utils.InvokeDelayed(
-                    () => Run(), 2f);
+                    () =>
+                    {
+                        Run();
+                        ShowComboText(PlayerComboText);
+                    }, 2f);
             }, 1f);
         }
     }
@@ -207,18 +214,20 @@ public class ScaleController : MonoBehaviour
 
     private void ShowComboText(Graphic t)
     {
-        Utils.Animate(t.rectTransform.anchoredPosition, new Vector2(0f, 0f), 0.3f,
-            v => t.rectTransform.anchoredPosition = v, null, true);
+        t.rectTransform.anchoredPosition = Vector2.zero;
+//        Utils.Animate(t.rectTransform.anchoredPosition, new Vector2(0f, 0f), 0.3f,
+//            v => t.rectTransform.anchoredPosition = v, null, true);
+        Utils.Animate(0f, 1f, 0.3f, v => t.rectTransform.localScale = new Vector3(v, v, v), null, true);
     }
 
     private void HideComboText(Graphic t)
     {
-        Debug.Log("hide " + t.name);
-        float os;
-        if (t == PlayerComboText) os = -_ctOffScreen;
-        else os = _ctOffScreen;
-        Utils.Animate(t.rectTransform.anchoredPosition, new Vector2(os * 2, 0), 0.3f,
-            v => t.rectTransform.anchoredPosition = v, null, true);
+        Utils.Animate(1f, 0f, 0.3f, v => t.rectTransform.localScale = new Vector3(v, v, v), null, true);
+//        float os;
+//        if (t == PlayerComboText) os = -_ctOffScreen;
+//        else os = _ctOffScreen;
+//        Utils.Animate(t.rectTransform.anchoredPosition, new Vector2(os * 2, 0), 0.3f,
+//            v => t.rectTransform.anchoredPosition = v, null, true);
     }
 
     private void Hide()
@@ -312,7 +321,7 @@ public class ScaleController : MonoBehaviour
         {
             Size2 = size;
         }
-        scale.sizeDelta = new Vector2(Rt.rect.width * size, scale.rect.height);
+        scale.sizeDelta = new Vector2(Rt.rect.width * size, 0);
     }
 
     public void CutSubscale(float pos)
@@ -334,7 +343,7 @@ public class ScaleController : MonoBehaviour
             var sizeDelta = SubScale.rect.width - newSize;
             newPos = SubScale.anchoredPosition.x + sizeDelta / 2;
         }
-        SubScale.sizeDelta = new Vector2(newSize, SubScale.rect.height);
+        SubScale.sizeDelta = new Vector2(newSize, 0);
         SubScale.anchoredPosition = new Vector2(newPos, SubScale.anchoredPosition.y);
     }
 }
