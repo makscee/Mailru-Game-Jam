@@ -254,6 +254,8 @@ public class ShopGameLogic : MonoBehaviour
             _PlayerParts.Eyes.transform.localPosition += 2*v;
             _PlayerParts.Nose.transform.localPosition += 2*v;
 
+            _PlayerParts.Paws.transform.localPosition += v;
+            
             v.x = v.y;
             v.y = 0;
             v.z = 0;
