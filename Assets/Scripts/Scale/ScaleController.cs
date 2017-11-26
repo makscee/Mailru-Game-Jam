@@ -39,7 +39,7 @@ public class ScaleController : MonoBehaviour
         SubScale.anchoredPosition = new Vector2(UnityEngine.Random.value * width / 3 - width / 6, 0);
 //        SubScale2.anchoredPosition = new Vector2(width / 4, 0);
         SetScale(0.3f, SubScale);
-//        SetScale(0.05f, SubScale2);
+//        SetScale(0.05f, SubScale2);    
         PlayerState.LoadFromPrefs();
     }
 
@@ -48,6 +48,11 @@ public class ScaleController : MonoBehaviour
         _curPlayer = BattleLevel.Instance.Player;
         _curAnim = BattleLevel.Instance.PAnim;
         _curComboText = PlayerComboText;
+        BattleLevel.Instance.EAnim.View.SuitType = SuitType.Croc;
+        if (Results.NewSuit)
+        {
+            BattleLevel.Instance.PAnim.View.SuitType = SuitType.Pig;
+        }
     }
 
     public BattleState BattleState;

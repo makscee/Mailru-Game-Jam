@@ -7,6 +7,7 @@ using UnityEngine.UI;
 
 public class Results : MonoBehaviour
 {
+    public static bool NewSuit = false;
     public Text VersusCombo, SoloCombo;
 
     public void Run()
@@ -32,13 +33,13 @@ public class Results : MonoBehaviour
             {
                 vScore++;
                 Effects.ExplosionEffect(VersusCombo.transform.position, 25);
-                VersusCombo.fontSize = Math.Min(105, VersusCombo.fontSize + fontIncrease);
+//                VersusCombo.fontSize = Math.Min(105, VersusCombo.fontSize + fontIncrease);
             }
             if (sScore < Scores.ScoreEnemy || sScore < Scores.ScorePlayer)
             {
                 sScore++;
                 Effects.ExplosionEffect(SoloCombo.transform.position, 25);
-                SoloCombo.fontSize = Math.Min(105, SoloCombo.fontSize + fontIncrease);
+//                SoloCombo.fontSize = Math.Min(105, SoloCombo.fontSize + fontIncrease);
             }
             VersusCombo.text = "x" + vScore;
             SoloCombo.text = "x" + sScore;
@@ -52,6 +53,7 @@ public class Results : MonoBehaviour
                 Scores.Combo = 0;
                 Scores.ScorePlayer = 0;
                 Scores.ScoreEnemy = 0;
+                NewSuit = true;
                 SceneManager.LoadScene("Room");
             }
             yield return null;
