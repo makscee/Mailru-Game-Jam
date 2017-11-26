@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -27,7 +26,7 @@ public class Noses {
 		}
 	}
 
-	public static Sprite GetActive(NoseType type)
+	public static Sprite Get(NoseType type)
 	{
 		return _sprites[type];
 	}
