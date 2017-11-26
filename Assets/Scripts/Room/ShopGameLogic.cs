@@ -1,17 +1,5 @@
 ﻿using UnityEngine;
 
-public class PlayerParts
-{
-    public SpriteRenderer Body;
-    public SpriteRenderer Suit;
-    public SpriteRenderer Paws;
-    public SpriteRenderer Nose;
-    public SpriteRenderer Tail;
-    public SpriteRenderer Eyes;
-    public SpriteRenderer Pillow;
-    public SpriteRenderer Shadow;
-}
-
 public class ShopGameLogic : MonoBehaviour
 {
     private GameObject _playerView;

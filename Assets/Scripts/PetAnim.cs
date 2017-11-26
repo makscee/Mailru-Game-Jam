@@ -1,5 +1,18 @@
 ﻿using UnityEngine;
 
+public class PlayerParts
+{
+    public SpriteRenderer Body;
+    public SpriteRenderer Suit;
+    public SpriteRenderer Paws;
+    public SpriteRenderer Nose;
+    public SpriteRenderer Tail;
+    public SpriteRenderer Eyes;
+    public SpriteRenderer Pillow;
+    public SpriteRenderer Shadow;
+    public SpriteRenderer Crown;
+}
+
 public class PetAnim
 {
     private readonly Transform _playerView;
@@ -34,6 +47,7 @@ public class PetAnim
         PlayerParts.Eyes = _playerView.transform.Find("Eyes").GetComponent<SpriteRenderer>();
         PlayerParts.Pillow = _playerView.transform.Find("Pillow").GetComponent<SpriteRenderer>();
         PlayerParts.Shadow = _playerView.transform.Find("Shadow").GetComponent<SpriteRenderer>();
+        PlayerParts.Crown = _playerView.transform.Find("Crown").GetComponent<SpriteRenderer>();
 
         _mainPartsT = new Transform[]
         {
@@ -43,6 +57,7 @@ public class PetAnim
             PlayerParts.Nose.transform,
             PlayerParts.Tail.transform,
             PlayerParts.Eyes.transform,
+            PlayerParts.Crown.transform,
         };
     }
 
@@ -188,6 +203,8 @@ public class PetAnim
             
             PlayerParts.Eyes.transform.localPosition += 2*v;
             PlayerParts.Nose.transform.localPosition += 2*v;
+            
+            PlayerParts.Crown.transform.localPosition -= 3*v;
 
             PlayerParts.Paws.transform.localPosition += v;
             
