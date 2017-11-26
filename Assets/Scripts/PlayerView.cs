@@ -8,7 +8,7 @@ public class PlayerView {
         set
         {
             _pawsType = value;
-            ShopGameLogic.Instance._PlayerParts.Paws.sprite = Paws.Get(_pawsType);
+            ShopGameLogic.Instance.PetAnim.PlayerParts.Paws.sprite = Paws.Get(_pawsType);
         }
     }
    
@@ -19,7 +19,7 @@ public class PlayerView {
         set
         {
             _eyeType = value;
-            ShopGameLogic.Instance._PlayerParts.Eyes.sprite = Eyes.Get(_eyeType);
+            ShopGameLogic.Instance.PetAnim.PlayerParts.Eyes.sprite = Eyes.Get(_eyeType);
         }
     }
     
@@ -30,7 +30,7 @@ public class PlayerView {
         set
         {
             _noseType = value;
-            ShopGameLogic.Instance._PlayerParts.Nose.sprite = Noses.Get(_noseType);
+            ShopGameLogic.Instance.PetAnim.PlayerParts.Nose.sprite = Noses.Get(_noseType);
         }
     }
     
@@ -41,7 +41,7 @@ public class PlayerView {
         set
         {
             _tailType = value;
-            ShopGameLogic.Instance._PlayerParts.Tail.sprite = Tails.Get(_tailType);
+            ShopGameLogic.Instance.PetAnim.PlayerParts.Tail.sprite = Tails.Get(_tailType);
         }
     }
     
@@ -53,7 +53,7 @@ public class PlayerView {
         {
             _suitType = value;
 
-            var parts = ShopGameLogic.Instance._PlayerParts;
+            var parts = ShopGameLogic.Instance.PetAnim.PlayerParts;
             
             var suitInfo = Suits.Get(_suitType);
 
@@ -76,7 +76,7 @@ public class PlayerView {
     public static void SetPaws(bool up)
     {
         var suitInfo = Suits.Get(_suitType);
-        var parts = ShopGameLogic.Instance._PlayerParts;
+        var parts = ShopGameLogic.Instance.PetAnim.PlayerParts;
 
         if (null == suitInfo)
         {
