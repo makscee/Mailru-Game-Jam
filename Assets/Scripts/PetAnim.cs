@@ -7,7 +7,9 @@ public class PetAnim
     public readonly PlayerParts PlayerParts;
     private readonly Transform[] _mainPartsT;
     
-    private int _breathLoop;
+    private int _blinkIter;
+    private int _changeFaceIter;
+    private EyeType _lastEyeType;
     
     private bool _inJump;
 
@@ -52,7 +54,7 @@ public class PetAnim
     {
         PlayerView.EyeType = (EyeType)Random.Range((int)EyeType.Blink1, Eyes.Count());
         PlayerView.NoseType = (NoseType)Random.Range(0, Noses.Count());
-        PlayerView.SuitType = (SuitType)Random.Range(0, Suits.Count());
+        //PlayerView.SuitType = (SuitType)Random.Range(0, Suits.Count());
     }
 
     public bool Jump()
@@ -74,9 +76,9 @@ public class PetAnim
         const float pillowAnimationWindow = animationWindow/1.5f;
         const float squizeVal = 0.05f;
 
-        const float PetTSpeed = 18f;
-        const float PillowSpeed = 7f;
-        const float ShadowSpeed = -4f;
+        const float petTSpeed = 18f;
+        const float pillowSpeed = 7f;
+        const float shadowSpeed = -4f;
         
         var steps = new Vector2[]
         {
@@ -96,18 +98,18 @@ public class PetAnim
             foreach (var t in _mainPartsT)
             {
               t.localScale += v;
-              t.localPosition += PetTSpeed * v;
+              t.localPosition += petTSpeed * v;
             }
         });
         Utils.Animate(Vector2.zero, new Vector2(0, squizeVal), pillowAnimationWindow, (v) =>
         {
-            pillowT.localPosition += PillowSpeed * v;
+            pillowT.localPosition += pillowSpeed * v;
 
             v.x = v.y;
             v.z = v.y;
             v.y = 0;
-            pillowT.localScale += ShadowSpeed * v;
-            shadowT.localScale += ShadowSpeed*v;
+            pillowT.localScale += shadowSpeed * v;
+            shadowT.localScale += shadowSpeed*v;
         });
         
         // Down
@@ -115,13 +117,13 @@ public class PetAnim
         {
             Utils.Animate(new Vector2(0, squizeVal), Vector2.zero, pillowAnimationWindow, (v) =>
             {
-                pillowT.localPosition += PillowSpeed * v;
+                pillowT.localPosition += pillowSpeed * v;
                 
                 v.x = v.y;
                 v.z = v.y;
                 v.y = 0;
-                pillowT.localScale += ShadowSpeed*v;
-                shadowT.localScale += ShadowSpeed*v;
+                pillowT.localScale += shadowSpeed*v;
+                shadowT.localScale += shadowSpeed*v;
             });
         }, pillowAnimationWindow);
         
@@ -138,7 +140,7 @@ public class PetAnim
             {
                 foreach (var t in _mainPartsT)
                 {
-                    t.localPosition += PetTSpeed * v;
+                    t.localPosition += petTSpeed * v;
                 }
             });
             
@@ -191,16 +193,32 @@ public class PetAnim
         
         Utils.InvokeDelayed(() =>
         {
-            // blinking
-            var rnd = Random.Range(4, 5);
-            if ((++_breathLoop % rnd) == (rnd-1))
+            ++_changeFaceIter;
+            ++_blinkIter;
+            
+            // change face
+            if (_changeFaceIter >= 4)
             {
-                _breathLoop = 0;
-                
+                _changeFaceIter = 0;
                 PlayerView.EyeType = EyeType.Blink0;
                 Utils.InvokeDelayed(() =>
                 {
                     UpdateFace();
+                    Breath(-dir);
+                }, 0.15f);
+                return;
+            }
+            
+            // blinking
+            if (_blinkIter >= 6)
+            {
+                _blinkIter = 0;
+
+                _lastEyeType = PlayerView.EyeType;
+                PlayerView.EyeType = EyeType.Blink0;
+                Utils.InvokeDelayed(() =>
+                {
+                    PlayerView.EyeType = _lastEyeType;
                     Breath(-dir);
                 }, 0.15f);
                 return;
