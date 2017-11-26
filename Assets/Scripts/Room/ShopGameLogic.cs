@@ -38,6 +38,10 @@ public class ShopGameLogic : MonoBehaviour
         pv.PawsType = PawsType.Down;
         pv.TailState = TailState.Normal;
         pv.SuitType = SuitType.None;
+        if (Results.NewSuit)
+        {
+            pv.SuitType = SuitType.Pig;
+        }
     }
 
     private void Start()
