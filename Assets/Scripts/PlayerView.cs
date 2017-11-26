@@ -1,17 +1,12 @@
-﻿public enum HandsType
-{
-    Down,
-    Up
-}
-
-public class PlayerView {
-    private static HandsType _handsType = HandsType.Down;
-    public static HandsType HandsType
+﻿public class PlayerView {
+    private static PawsType _pawsType = PawsType.Down;
+    public static PawsType PawsType
     {
-        get { return _handsType; }
+        get { return _pawsType; }
         set
         {
-            _handsType = value;
+            _pawsType = value;
+            ShopGameLogic.Instance._PlayerParts.Paws.sprite = Paws.GetActive(_pawsType);
         }
     }
    

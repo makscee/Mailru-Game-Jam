@@ -9,7 +9,7 @@ public enum PlayerSmth
 public class PlayerParts
 {
     public SpriteRenderer Body;
-    public SpriteRenderer Hands;
+    public SpriteRenderer Paws;
     public SpriteRenderer Nose;
     public SpriteRenderer Tail;
     public SpriteRenderer Eyes;
@@ -61,6 +61,7 @@ public class ShopGameLogic : MonoBehaviour
         Pillows.Load();
         Eyes.Load();
         Noses.Load();
+        Paws.Load();
         
         /*var playerCloth = _playerView.transform.Find("Cloth");
         _playerClothSpriteRenderer = playerCloth.GetComponent<SpriteRenderer>();
@@ -72,7 +73,7 @@ public class ShopGameLogic : MonoBehaviour
         playerCloth.gameObject.SetActive(false);*/
         
         _PlayerParts.Body = _playerView.transform.Find("Body").GetComponent<SpriteRenderer>();
-        _PlayerParts.Hands = _playerView.transform.Find("Hands").GetComponent<SpriteRenderer>();
+        _PlayerParts.Paws = _playerView.transform.Find("Paws").GetComponent<SpriteRenderer>();
         _PlayerParts.Nose = _playerView.transform.Find("Nose").GetComponent<SpriteRenderer>();
         _PlayerParts.Tail = _playerView.transform.Find("Tail").GetComponent<SpriteRenderer>();
         _PlayerParts.Eyes = _playerView.transform.Find("Eyes").GetComponent<SpriteRenderer>();
@@ -82,7 +83,7 @@ public class ShopGameLogic : MonoBehaviour
         mainPartsT = new Transform[]
         {
             _PlayerParts.Body.transform,
-            _PlayerParts.Hands.transform,
+            _PlayerParts.Paws.transform,
             _PlayerParts.Nose.transform,
             _PlayerParts.Tail.transform,
             _PlayerParts.Eyes.transform,
@@ -99,6 +100,7 @@ public class ShopGameLogic : MonoBehaviour
 
         PlayerView.EyeType = EyeType.Center3;
         PlayerView.NoseType = NoseType.Nose1;
+        PlayerView.PawsType = PawsType.Down;
     }
 
     private void Start()
@@ -156,6 +158,8 @@ public class ShopGameLogic : MonoBehaviour
 
         var PillowT = _PlayerParts.Pillow.transform;
         var ShadowT = _PlayerParts.Shadow.transform;
+        
+        PlayerView.PawsType = PawsType.Up;
 
         // Up
         
@@ -213,6 +217,7 @@ public class ShopGameLogic : MonoBehaviour
             Utils.InvokeDelayed(() =>
             {
                 // Restore
+                PlayerView.PawsType = PawsType.Down;
                 
                 Utils.Animate(steps[1], Vector3.zero, animationWindow, (v) =>
                 {
@@ -251,8 +256,11 @@ public class ShopGameLogic : MonoBehaviour
         Utils.InvokeDelayed(() =>
         {
             // blinking
-            if ((++_breathLoop % 4) == 3)
+            var rnd = Random.Range(4, 5);
+            if ((++_breathLoop % rnd) == (rnd-1))
             {
+                _breathLoop = 0;
+                
                 PlayerView.EyeType = EyeType.Blink0;
                 Utils.InvokeDelayed(() =>
                 {
