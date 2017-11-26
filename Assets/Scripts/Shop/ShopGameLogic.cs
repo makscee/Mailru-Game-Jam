@@ -241,6 +241,11 @@ public class ShopGameLogic : MonoBehaviour
             _PlayerParts.Body.transform.localPosition += v;
             _PlayerParts.Eyes.transform.localPosition += 2*v;
             _PlayerParts.Nose.transform.localPosition += 2*v;
+
+            v.x = v.y;
+            v.y = 0;
+            v.z = 0;
+            _PlayerParts.Tail.transform.localPosition += 2*v;
         });
         
         Utils.InvokeDelayed(() =>
