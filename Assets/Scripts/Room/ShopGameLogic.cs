@@ -58,6 +58,11 @@ public class ShopGameLogic : MonoBehaviour
     private void Start()
     {
         PetAnim.StartBreath();
+        
+        Utils.InvokeDelayed(() =>
+        {
+            PetAnim.Jump();
+        }, 1f);
     }
 
     public void ClickOnPlayer()
