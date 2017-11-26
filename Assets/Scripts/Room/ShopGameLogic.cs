@@ -27,6 +27,7 @@ public class ShopGameLogic : MonoBehaviour
     public static ShopGameLogic Instance;
 
     [SerializeField] private Camera _camera;
+    private PlayerView pv;
 
     private void Awake()
     {
@@ -47,12 +48,14 @@ public class ShopGameLogic : MonoBehaviour
         playerObj.transform.position = new Vector3(0, 2f, -2f);
 
         PetAnim = new PetAnim(_playerView.transform);
+        pv = new PlayerView(PetAnim);
+        PetAnim.View = pv;
 
-        PlayerView.EyeType = EyeType.Center3;
-        PlayerView.NoseType = NoseType.Nose1;
-        PlayerView.PawsType = PawsType.Down;
-        PlayerView.TailState = TailState.Normal;
-        PlayerView.SuitType = SuitType.None;
+        pv.EyeType = EyeType.Center3;
+        pv.NoseType = NoseType.Nose1;
+        pv.PawsType = PawsType.Down;
+        pv.TailState = TailState.Normal;
+        pv.SuitType = SuitType.None;
     }
 
     private void Start()

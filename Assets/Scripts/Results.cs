@@ -7,13 +7,12 @@ using UnityEngine.UI;
 
 public class Results : MonoBehaviour
 {
-    public Text PlayerCombo, EnemyCombo;
-    public GameObject Continue;
+    public Text VersusCombo, SoloCombo;
 
     public void Run()
     {
-        PlayerCombo.text = "x0";
-        EnemyCombo.text = "x0";
+        VersusCombo.text = "x0";
+        SoloCombo.text = "x0";
         Utils.InvokeDelayed(() =>
         {
             gameObject.SetActive(true);
@@ -23,29 +22,28 @@ public class Results : MonoBehaviour
 
     private IEnumerator ComboCount()
     {
-        var pScore = 0;
-        var eScore = 0;
+        var vScore = 0;
+        var sScore = 0;
         const int fontIncrease = 10;
         do
         {
             yield return new WaitForSeconds(0.3f);
-            if (pScore < Scores.ScorePlayer)
+            if (vScore < Scores.ScorePlayer && vScore < Scores.ScoreEnemy)
             {
-                pScore++;
-                Effects.ExplosionEffect(PlayerCombo.transform.position, 25);
-                PlayerCombo.fontSize = Math.Min(150, PlayerCombo.fontSize + fontIncrease);
+                vScore++;
+                Effects.ExplosionEffect(VersusCombo.transform.position, 25);
+                VersusCombo.fontSize = Math.Min(105, VersusCombo.fontSize + fontIncrease);
             }
-            if (eScore < Scores.ScoreEnemy)
+            if (sScore < Scores.ScoreEnemy || sScore < Scores.ScorePlayer)
             {
-                eScore++;
-                Effects.ExplosionEffect(EnemyCombo.transform.position, 25);
-                EnemyCombo.fontSize = Math.Min(150, EnemyCombo.fontSize + fontIncrease);
+                sScore++;
+                Effects.ExplosionEffect(SoloCombo.transform.position, 25);
+                SoloCombo.fontSize = Math.Min(105, SoloCombo.fontSize + fontIncrease);
             }
-            PlayerCombo.text = "x" + pScore;
-            EnemyCombo.text = "x" + eScore;
-        } while (pScore < Scores.ScorePlayer || eScore < Scores.ScoreEnemy);
+            VersusCombo.text = "x" + vScore;
+            SoloCombo.text = "x" + sScore;
+        } while (sScore < Scores.ScoreEnemy || sScore < Scores.ScorePlayer);
         yield return new WaitForSeconds(0.5f);
-        Continue.SetActive(true);
         while (true)
         {
             if (ScaleController.TapDown())
@@ -54,7 +52,7 @@ public class Results : MonoBehaviour
                 Scores.Combo = 0;
                 Scores.ScorePlayer = 0;
                 Scores.ScoreEnemy = 0;
-                SceneManager.LoadScene("Battle");
+                SceneManager.LoadScene("Room");
             }
             yield return null;
         }

@@ -1,59 +1,68 @@
 ﻿using UnityEngine;
 
-public class PlayerView {
-    private static PawsType _pawsType = PawsType.Down;
-    public static PawsType PawsType
+public class PlayerView
+{
+
+    private PetAnim anim;
+
+    public PlayerView(PetAnim pa)
+    {
+        anim = pa;
+    }
+    
+    private PawsType _pawsType = PawsType.Down;
+    public PawsType PawsType
     {
         get { return _pawsType; }
         set
         {
             _pawsType = value;
-            ShopGameLogic.Instance.PetAnim.PlayerParts.Paws.sprite = Paws.Get(_pawsType);
+            anim.PlayerParts.Paws.sprite = Paws.Get(_pawsType);
         }
     }
    
-    private static EyeType _eyeType = EyeType.Center3;
-    public static EyeType EyeType
+    private EyeType _eyeType = EyeType.Center3;
+    public EyeType EyeType
     {
         get { return _eyeType; }
         set
         {
             _eyeType = value;
-            ShopGameLogic.Instance.PetAnim.PlayerParts.Eyes.sprite = Eyes.Get(_eyeType);
+            anim.PlayerParts.Eyes.sprite = Eyes.Get(_eyeType);
         }
     }
     
-    private static NoseType _noseType = NoseType.Nose1;
-    public static NoseType NoseType
+    private NoseType _noseType = NoseType.Nose1;
+    public NoseType NoseType
     {
         get { return _noseType; }
         set
         {
             _noseType = value;
-            ShopGameLogic.Instance.PetAnim.PlayerParts.Nose.sprite = Noses.Get(_noseType);
+            anim.PlayerParts.Nose.sprite = Noses.Get(_noseType);
         }
     }
     
-    private static TailState _tailType = TailState.Normal;
-    public static TailState TailState
+    private TailState _tailType = TailState.Normal;
+    public TailState TailState
     {
         get { return _tailType; }
         set
         {
             _tailType = value;
-            ShopGameLogic.Instance.PetAnim.PlayerParts.Tail.sprite = Tails.Get(_tailType);
+            anim.PlayerParts.Tail.sprite = Tails.Get(_tailType);
         }
     }
     
-    private static SuitType _suitType = SuitType.None;
-    public static SuitType SuitType
+    private SuitType _suitType = SuitType.None;
+    public SuitType SuitType
     {
         get { return _suitType; }
         set
         {
             _suitType = value;
 
-            var parts = ShopGameLogic.Instance.PetAnim.PlayerParts;
+            var parts = anim.PlayerParts;
             
             var suitInfo = Suits.Get(_suitType);
 
@@ -73,10 +82,10 @@ public class PlayerView {
         }
     }
 
-    public static void SetPaws(bool up)
+    public void SetPaws(bool up)
     {
         var suitInfo = Suits.Get(_suitType);
-        var parts = ShopGameLogic.Instance.PetAnim.PlayerParts;
+        var parts = anim.PlayerParts;
 
         if (null == suitInfo)
         {

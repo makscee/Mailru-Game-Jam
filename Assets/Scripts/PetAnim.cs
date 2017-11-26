@@ -5,6 +5,7 @@ public class PetAnim
     private readonly Transform _playerView;
 
     public readonly PlayerParts PlayerParts;
+    public PlayerView View;
     private readonly Transform[] _mainPartsT;
     
     private int _blinkIter;
@@ -52,9 +53,15 @@ public class PetAnim
     
     public void UpdateFace()
     {
-        PlayerView.EyeType = (EyeType)Random.Range((int)EyeType.Blink1, Eyes.Count());
-        PlayerView.NoseType = (NoseType)Random.Range(0, Noses.Count());
+        View.EyeType = (EyeType)Random.Range((int)EyeType.Blink1, Eyes.Count());
+        View.NoseType = (NoseType)Random.Range(0, Noses.Count());
         //PlayerView.SuitType = (SuitType)Random.Range(0, Suits.Count());
+    }
+
+    public void SetFace(EyeType e, NoseType n)
+    {
+        View.EyeType = e;
+        View.NoseType = n;
     }
 
     public bool Jump()
@@ -89,7 +96,7 @@ public class PetAnim
         var pillowT = PlayerParts.Pillow.transform;
         var shadowT = PlayerParts.Shadow.transform;
         
-        PlayerView.SetPaws(true);
+        View.SetPaws(true);
 
         // Up
         
@@ -147,7 +154,7 @@ public class PetAnim
             Utils.InvokeDelayed(() =>
             {
                 // Restore
-                PlayerView.SetPaws(false);
+                View.SetPaws(false);
                 
                 Utils.Animate(steps[1], Vector3.zero, animationWindow, (v) =>
                 {
@@ -200,7 +207,7 @@ public class PetAnim
             if (_changeFaceIter >= 4)
             {
                 _changeFaceIter = 0;
-                PlayerView.EyeType = EyeType.Blink0;
+                View.EyeType = EyeType.Blink0;
                 Utils.InvokeDelayed(() =>
                 {
                     UpdateFace();
@@ -214,11 +221,11 @@ public class PetAnim
             {
                 _blinkIter = 0;
 
-                _lastEyeType = PlayerView.EyeType;
-                PlayerView.EyeType = EyeType.Blink0;
+                _lastEyeType = View.EyeType;
+                View.EyeType = EyeType.Blink0;
                 Utils.InvokeDelayed(() =>
                 {
-                    PlayerView.EyeType = _lastEyeType;
+                    View.EyeType = _lastEyeType;
                     Breath(-dir);
                 }, 0.15f);
                 return;

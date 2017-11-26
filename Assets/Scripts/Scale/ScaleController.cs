@@ -2,6 +2,7 @@
 using System.Collections;
 using JetBrains.Annotations;
 using UnityEngine;
+using UnityEngine.Experimental.UIElements;
 using UnityEngine.SocialPlatforms.Impl;
 using UnityEngine.UI;
 
@@ -18,16 +19,16 @@ public class ScaleController : MonoBehaviour
     public RectTransform SubScale, Pointer;
     public Results Results;
     public Text PlayerComboText, EnemyComboText, Winner;
-    public float Size1, Size2;
     private PointerController _pc;
     private float _offScreen, _onScreen, _ctOffScreen;
     public static RectTransform Rt;
     public static ScaleController Instance;
+    public GameObject TapBtn;
 
     private void Awake()
     {
         Rt = GetComponent<RectTransform>();
-        Rt.sizeDelta = new Vector2(Screen.width - 60, Rt.rect.height);
+        Rt.sizeDelta = new Vector2(Screen.width - 60, Screen.height / 15);
         Instance = this;
         _pc = Pointer.GetComponent<PointerController>();
         _offScreen = Screen.height / 2f + Rt.rect.height;
@@ -45,6 +46,7 @@ public class ScaleController : MonoBehaviour
     private void Start()
     {
         _curPlayer = BattleLevel.Instance.Player;
+        _curAnim = BattleLevel.Instance.PAnim;
         _curComboText = PlayerComboText;
     }
 
@@ -87,6 +89,7 @@ public class ScaleController : MonoBehaviour
     }
 
     private GameObject _curPlayer;
+    private PetAnim _curAnim;
     private Text _curComboText;
     private bool _failed, _switched;
 
@@ -109,6 +112,7 @@ public class ScaleController : MonoBehaviour
         {
             _curComboText = EnemyComboText;
             _curPlayer = BattleLevel.Instance.Enemy;
+            _curAnim = BattleLevel.Instance.EAnim;
             Utils.InvokeDelayed(() =>
             {
                 _pc.Reset();
@@ -129,6 +133,7 @@ public class ScaleController : MonoBehaviour
         else
         {
             _curPlayer = BattleLevel.Instance.Player;
+            _curAnim = BattleLevel.Instance.PAnim;
             _curComboText = PlayerComboText;
             Utils.InvokeDelayed(() =>
             {
@@ -170,6 +175,7 @@ public class ScaleController : MonoBehaviour
                     Results.Run();
                     Hide();
                     HideComboText(_curComboText);
+                    TapBtn.SetActive(false);
                     return;
                 }
 //                Scores.ScoreEnemy = UnityEngine.Random.Range(4, 8);
@@ -185,6 +191,14 @@ public class ScaleController : MonoBehaviour
                     Effects.HeartsEffect(_curPlayer.transform.position, 2);
                 }
                 AddCombo();
+                if (BattleLevel.Instance.PAnim.Jump())
+                {
+                    _curAnim.SetFace(EyeType.Right1, NoseType.Nose3);
+                }
+                if (BattleLevel.Instance.EAnim.Jump())
+                {
+                    _curAnim.SetFace(EyeType.Right1, NoseType.Nose3);
+                }
                 break;
         }
         CutSubscale(_pc.transform.position.x);
@@ -300,6 +314,7 @@ public class ScaleController : MonoBehaviour
     public static bool TapDown()
     {
         if (Input.GetKeyDown(KeyCode.Space)) return true;
+        if (Input.GetMouseButtonDown(0)) return true;
         if (Input.touchCount > 0)
         {
             for (var i = 0; i < Input.touchCount; ++i)
@@ -313,14 +328,6 @@ public class ScaleController : MonoBehaviour
 
     public void SetScale(float size, RectTransform scale)
     {
-        if (scale == SubScale)
-        {
-            Size1 = size;
-        }
-        else
-        {
-            Size2 = size;
-        }
         scale.sizeDelta = new Vector2(Rt.rect.width * size, 0);
     }
 
