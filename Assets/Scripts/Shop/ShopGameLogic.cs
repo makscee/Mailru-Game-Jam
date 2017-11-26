@@ -253,7 +253,7 @@ public class ShopGameLogic : MonoBehaviour
                 {
                     updateFace();
                     breath(-dir);
-                }, 0.1f);
+                }, 0.15f);
                 return;
             }
         
@@ -263,7 +263,7 @@ public class ShopGameLogic : MonoBehaviour
 
     private void updateFace()
     {
-        PlayerView.EyeType = (EyeType)Random.Range((int)EyeType.Top0, Eyes.Count());
+        PlayerView.EyeType = (EyeType)Random.Range((int)EyeType.Blink1, Eyes.Count());
         PlayerView.NoseType = (NoseType)Random.Range(0, Noses.Count());
     }
 
