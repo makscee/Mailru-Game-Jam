@@ -6,7 +6,7 @@ public enum PlayerSmth
     Pillow
 }
 
-class PlayerParts
+public class PlayerParts
 {
     public SpriteRenderer Body;
     public SpriteRenderer Hands;
@@ -24,7 +24,7 @@ public class ShopGameLogic : MonoBehaviour
 
     public static ShopGameLogic Instance;
 
-    private PlayerParts _playerParts;
+    public PlayerParts _PlayerParts;
     private Transform[] mainPartsT;
 
     [SerializeField] private Camera _camera;
@@ -37,7 +37,7 @@ public class ShopGameLogic : MonoBehaviour
     {
         Instance = this;
         
-        _playerParts = new PlayerParts();
+        _PlayerParts = new PlayerParts();
         
         if (_camera == null)
         {
@@ -51,12 +51,14 @@ public class ShopGameLogic : MonoBehaviour
         
        _playerObj.GetComponent<ShopPlayerIO>().ShopGameLogic = this;
         
-        _playerObj.transform.position = new Vector3(0, 0, -2f);
+        _playerObj.transform.position = new Vector3(0, 2f, -2f);
         
         PlayerState.LoadFromPrefs();
         
         Clothes.Load();
         Pillows.Load();
+        Eyes.Load();
+        Noses.Load();
         
         /*var playerCloth = _playerView.transform.Find("Cloth");
         _playerClothSpriteRenderer = playerCloth.GetComponent<SpriteRenderer>();
@@ -67,31 +69,34 @@ public class ShopGameLogic : MonoBehaviour
         _playerClothSpriteRenderer.sprite = Clothes.Sprites[PlayerState.ClothIndex];
         playerCloth.gameObject.SetActive(false);*/
         
-        _playerParts.Body = _playerView.transform.Find("Body").GetComponent<SpriteRenderer>();
-        _playerParts.Hands = _playerView.transform.Find("Hands").GetComponent<SpriteRenderer>();
-        _playerParts.Nose = _playerView.transform.Find("Nose").GetComponent<SpriteRenderer>();
-        _playerParts.Tail = _playerView.transform.Find("Tail").GetComponent<SpriteRenderer>();
-        _playerParts.Eyes = _playerView.transform.Find("Eyes").GetComponent<SpriteRenderer>();
-        _playerParts.Pillow = _playerView.transform.Find("Pillow").GetComponent<SpriteRenderer>();
-        _playerParts.Shadow = _playerView.transform.Find("Shadow").GetComponent<SpriteRenderer>();
+        _PlayerParts.Body = _playerView.transform.Find("Body").GetComponent<SpriteRenderer>();
+        _PlayerParts.Hands = _playerView.transform.Find("Hands").GetComponent<SpriteRenderer>();
+        _PlayerParts.Nose = _playerView.transform.Find("Nose").GetComponent<SpriteRenderer>();
+        _PlayerParts.Tail = _playerView.transform.Find("Tail").GetComponent<SpriteRenderer>();
+        _PlayerParts.Eyes = _playerView.transform.Find("Eyes").GetComponent<SpriteRenderer>();
+        _PlayerParts.Pillow = _playerView.transform.Find("Pillow").GetComponent<SpriteRenderer>();
+        _PlayerParts.Shadow = _playerView.transform.Find("Shadow").GetComponent<SpriteRenderer>();
         
         mainPartsT = new Transform[]
         {
-            _playerParts.Body.transform,
-            _playerParts.Hands.transform,
-            _playerParts.Nose.transform,
-            _playerParts.Tail.transform,
-            _playerParts.Eyes.transform,
+            _PlayerParts.Body.transform,
+            _PlayerParts.Hands.transform,
+            _PlayerParts.Nose.transform,
+            _PlayerParts.Tail.transform,
+            _PlayerParts.Eyes.transform,
         };
         
         if (PlayerState.PillowIndex >= Pillows.Sprites.Count)
         {
             PlayerState.PillowIndex = 0;
         }
-        _playerParts.Pillow.sprite = Pillows.Sprites[PlayerState.PillowIndex][PillowState.Idle];
+        _PlayerParts.Pillow.sprite = Pillows.Sprites[PlayerState.PillowIndex][PillowState.Idle];
         //playerPillow.gameObject.SetActive(true);
         
-        _playerParts.Shadow = _playerView.transform.Find("Shadow").GetComponent<SpriteRenderer>();
+        _PlayerParts.Shadow = _playerView.transform.Find("Shadow").GetComponent<SpriteRenderer>();
+
+        PlayerView.EyeType = EyeType.Center3;
+        PlayerView.NoseType = NoseType.Nose1;
     }
 
     private void Start()
@@ -127,7 +132,7 @@ public class ShopGameLogic : MonoBehaviour
             //_playerParts.Body.sprite = Clothes.Sprites[curIdx];
         } else {
             PlayerState.PillowIndex = curIdx;
-            _playerParts.Pillow.sprite = Pillows.GetActive(PillowState.Idle);
+            _PlayerParts.Pillow.sprite = Pillows.GetActive(PillowState.Idle);
         }
     }
 
@@ -147,8 +152,8 @@ public class ShopGameLogic : MonoBehaviour
             new Vector2(squizeVal, -squizeVal*2)
         };
 
-        var PillowT = _playerParts.Pillow.transform;
-        var ShadowT = _playerParts.Shadow.transform;
+        var PillowT = _PlayerParts.Pillow.transform;
+        var ShadowT = _PlayerParts.Shadow.transform;
 
         // Up
         
@@ -230,10 +235,10 @@ public class ShopGameLogic : MonoBehaviour
         {
             v *= dir;
             
-            _playerParts.Body.transform.localScale += v;
-            _playerParts.Body.transform.localPosition += v;
-            _playerParts.Eyes.transform.localPosition += 2*v;
-            _playerParts.Nose.transform.localPosition += 2*v;
+            _PlayerParts.Body.transform.localScale += v;
+            _PlayerParts.Body.transform.localPosition += v;
+            _PlayerParts.Eyes.transform.localPosition += 2*v;
+            _PlayerParts.Nose.transform.localPosition += 2*v;
         });
         
         Utils.InvokeDelayed(() =>
@@ -250,6 +255,9 @@ public class ShopGameLogic : MonoBehaviour
         }
         _inAnim = true;
         ClickAnim();
+        
+        PlayerView.EyeType = (EyeType)UnityEngine.Random.Range(0, Eyes.Count());
+        PlayerView.NoseType = (NoseType)UnityEngine.Random.Range(0, Noses.Count());
 
         if (Random.value < 0.5f)
         {

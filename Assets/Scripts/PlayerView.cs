@@ -4,12 +4,6 @@
     Up
 }
 
-public enum PillowType
-{
-    Idle,
-    Up
-}
-
 public class PlayerView {
     private static HandsType _handsType = HandsType.Down;
     public static HandsType HandsType
@@ -20,14 +14,26 @@ public class PlayerView {
             _handsType = value;
         }
     }
-    
-    private static PillowType _pillowType = PillowType.Idle;
-    public static PillowType PillowType
+   
+    private static EyeType _eyeType = EyeType.Center3;
+    public static EyeType EyeType
     {
-        get { return _pillowType; }
+        get { return _eyeType; }
         set
         {
-            _pillowType = value;
+            _eyeType = value;
+            ShopGameLogic.Instance._PlayerParts.Eyes.sprite = Eyes.GetActive(_eyeType);
+        }
+    }
+    
+    private static NoseType _noseType = NoseType.Nose1;
+    public static NoseType NoseType
+    {
+        get { return _noseType; }
+        set
+        {
+            _noseType = value;
+            ShopGameLogic.Instance._PlayerParts.Nose.sprite = Noses.GetActive(_noseType);
         }
     }
 }
