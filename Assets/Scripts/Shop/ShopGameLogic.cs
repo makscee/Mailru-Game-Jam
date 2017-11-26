@@ -33,6 +33,8 @@ public class ShopGameLogic : MonoBehaviour
 
     private bool _inAnim;
     
+    private int _breathLoop = 0;
+    
     private void Awake()
     {
         Instance = this;
@@ -243,8 +245,26 @@ public class ShopGameLogic : MonoBehaviour
         
         Utils.InvokeDelayed(() =>
         {
+            // blinking
+            if ((++_breathLoop % 4) == 3)
+            {
+                PlayerView.EyeType = EyeType.Blink0;
+                Utils.InvokeDelayed(() =>
+                {
+                    updateFace();
+                    breath(-dir);
+                }, 0.1f);
+                return;
+            }
+        
             breath(-dir);
         }, over);
+    }
+
+    private void updateFace()
+    {
+        PlayerView.EyeType = (EyeType)Random.Range((int)EyeType.Top0, Eyes.Count());
+        PlayerView.NoseType = (NoseType)Random.Range(0, Noses.Count());
     }
 
     public void ClickOnPlayer()
@@ -255,9 +275,8 @@ public class ShopGameLogic : MonoBehaviour
         }
         _inAnim = true;
         ClickAnim();
-        
-        PlayerView.EyeType = (EyeType)UnityEngine.Random.Range(0, Eyes.Count());
-        PlayerView.NoseType = (NoseType)UnityEngine.Random.Range(0, Noses.Count());
+
+        updateFace();
 
         if (Random.value < 0.5f)
         {
